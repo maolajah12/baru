@@ -1,0 +1,1265 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Grafik Absensi Karyawan</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/icon?family=Material+Icons"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"
+    />
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+      :root {
+        --primary-color: #4a6fa5;
+        --secondary-color: #b9dcff;
+        --accent-color: #ff7e5f;
+        --light-color: #f8f9fa;
+        --dark-color: #343a40;
+        --shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        --transition: all 0.3s ease;
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: "Kanit", sans-serif;
+      }
+
+      body {
+        background-color: var(--light-color);
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        color: var(--dark-color);
+      }
+
+      /* Sidebar Modern */
+      .sidebar {
+        height: 100%;
+        width: 280px;
+        position: fixed;
+        z-index: 1000;
+        top: 0;
+        left: -280px;
+        background: linear-gradient(
+          135deg,
+          var(--primary-color) 0%,
+          #6b8cbe 100%
+        );
+        overflow-x: hidden;
+        transition: var(--transition);
+        box-shadow: 2px 0 15px rgba(0, 0, 0, 0.1);
+        display: flex;
+        flex-direction: column;
+      }
+
+      .sidebar.active {
+        left: 0;
+      }
+
+      .sidebar-header {
+        padding: 25px;
+        color: white;
+        background-color: rgba(0, 0, 0, 0.1);
+        text-align: center;
+      }
+
+      .sidebar-header h2 {
+        font-weight: 500;
+        font-size: 1.5rem;
+        margin-bottom: 5px;
+      }
+
+      .sidebar-header p {
+        font-weight: 300;
+        font-size: 0.9rem;
+        opacity: 0.8;
+      }
+
+      .sidebar-menu {
+        padding: 20px 0;
+        flex: 1;
+      }
+
+      .menu-item {
+        display: flex;
+        align-items: center;
+        padding: 15px 25px;
+        color: white;
+        text-decoration: none;
+        transition: var(--transition);
+        position: relative;
+        overflow: hidden;
+      }
+
+      .menu-item:hover {
+        background-color: rgba(255, 255, 255, 0.1);
+      }
+
+      .menu-item i {
+        margin-right: 15px;
+        font-size: 1.2rem;
+        width: 24px;
+        text-align: center;
+      }
+
+      .menu-item span {
+        font-weight: 300;
+      }
+
+      .menu-item::after {
+        content: "";
+        position: absolute;
+        left: 0;
+        top: 0;
+        height: 100%;
+        width: 3px;
+        background-color: var(--accent-color);
+        transform: translateX(-100%);
+        transition: var(--transition);
+      }
+
+      .menu-item:hover::after {
+        transform: translateX(0);
+      }
+
+      /* Overlay */
+      .overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: rgba(0, 0, 0, 0.5);
+        z-index: 999;
+        opacity: 0;
+        visibility: hidden;
+        transition: var(--transition);
+      }
+
+      .overlay.active {
+        opacity: 1;
+        visibility: visible;
+      }
+
+      /* Top Bar Modern */
+      .top-bar {
+        height: 70px;
+        background-color: white;
+        padding: 0 25px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        box-shadow: var(--shadow);
+        position: relative;
+        z-index: 100;
+      }
+
+      .menu-left {
+        display: flex;
+        align-items: center;
+      }
+
+      .menu-icon {
+        color: var(--primary-color);
+        font-size: 1.8rem;
+        cursor: pointer;
+        margin-right: 15px;
+        transition: var(--transition);
+      }
+
+      .menu-icon:hover {
+        transform: scale(1.1);
+      }
+
+      .page-title {
+        color: var(--primary-color);
+        font-size: 1.3rem;
+        font-weight: 500;
+      }
+
+      .user-profile {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background-color: var(--secondary-color);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        overflow: hidden;
+        transition: var(--transition);
+      }
+
+      .user-profile:hover {
+        transform: scale(1.1);
+      }
+
+      .user-profile img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+
+      /* Konten Utama */
+      .content {
+        flex: 1;
+        padding: 30px;
+        background-color: var(--light-color);
+        position: relative;
+      }
+
+      .welcome-message {
+        margin-bottom: 30px;
+      }
+
+      .welcome-message h1 {
+        color: var(--primary-color);
+        font-weight: 500;
+        font-size: 1.8rem;
+        margin-bottom: 10px;
+      }
+
+      .welcome-message p {
+        color: var(--dark-color);
+        opacity: 0.7;
+        font-weight: 300;
+      }
+
+      /* Filter Section */
+      .filter-section {
+        background-color: white;
+        border-radius: 15px;
+        padding: 20px;
+        margin-bottom: 30px;
+        box-shadow: var(--shadow);
+        display: flex;
+        flex-wrap: wrap;
+        gap: 15px;
+      }
+
+      .filter-group {
+        flex: 1;
+        min-width: 200px;
+      }
+
+      .filter-label {
+        display: block;
+        margin-bottom: 8px;
+        color: var(--primary-color);
+        font-weight: 400;
+        font-size: 0.9rem;
+      }
+
+      .filter-select {
+        width: 100%;
+        padding: 12px 15px;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        font-size: 0.95rem;
+        transition: var(--transition);
+        background-color: white;
+        appearance: none;
+        background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%234a6fa5%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E");
+        background-repeat: no-repeat;
+        background-position: right 0.7rem top 50%;
+        background-size: 0.65rem auto;
+      }
+
+      .filter-select:focus {
+        outline: none;
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 2px rgba(74, 111, 165, 0.2);
+      }
+
+      .apply-btn {
+        background: linear-gradient(
+          135deg,
+          var(--primary-color) 0%,
+          var(--accent-color) 100%
+        );
+        color: white;
+        border: none;
+        border-radius: 8px;
+        padding: 12px 25px;
+        font-size: 1rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: var(--transition);
+        align-self: flex-end;
+        margin-left: auto;
+      }
+
+      .apply-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+      }
+
+      /* Chart Container */
+      .chart-container {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+        gap: 25px;
+        margin-top: 20px;
+      }
+
+      .chart-card {
+        background-color: white;
+        border-radius: 15px;
+        box-shadow: var(--shadow);
+        padding: 25px;
+        transition: var(--transition);
+        position: relative;
+        overflow: hidden;
+      }
+
+      .chart-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+      }
+
+      .chart-card::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 5px;
+        background: linear-gradient(
+          90deg,
+          var(--primary-color),
+          var(--accent-color)
+        );
+      }
+
+      .chart-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+      }
+
+      .chart-title {
+        color: var(--primary-color);
+        font-size: 1.2rem;
+        font-weight: 500;
+      }
+
+      .chart-period {
+        color: var(--dark-color);
+        opacity: 0.7;
+        font-size: 0.9rem;
+        font-weight: 300;
+      }
+
+      .chart-wrapper {
+        position: relative;
+        height: 300px;
+        width: 100%;
+      }
+
+      /* Stats Cards */
+      .stats-container {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 20px;
+        margin-bottom: 30px;
+      }
+
+      .stat-card {
+        background-color: white;
+        border-radius: 15px;
+        box-shadow: var(--shadow);
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        transition: var(--transition);
+      }
+
+      .stat-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+      }
+
+      .stat-icon {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        background-color: var(--secondary-color);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 15px;
+        color: var(--primary-color);
+        font-size: 1.5rem;
+      }
+
+      .stat-value {
+        color: var(--primary-color);
+        font-size: 1.8rem;
+        font-weight: 500;
+        margin-bottom: 5px;
+      }
+
+      .stat-label {
+        color: var(--dark-color);
+        opacity: 0.7;
+        font-size: 0.9rem;
+        font-weight: 300;
+        text-align: center;
+      }
+
+      /* Bottom Bar Modern */
+      .bottom-bar {
+        height: 60px;
+        background-color: white;
+        box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+
+      .bottom-bar p {
+        color: var(--dark-color);
+        opacity: 0.6;
+        font-size: 0.8rem;
+        font-weight: 300;
+      }
+
+      /* Responsive Design */
+      @media (max-width: 768px) {
+        .sidebar {
+          width: 250px;
+          left: -250px;
+        }
+
+        .chart-container {
+          grid-template-columns: 1fr;
+        }
+
+        .welcome-message h1 {
+          font-size: 1.5rem;
+        }
+
+        .top-bar {
+          padding: 0 15px;
+          height: 60px;
+        }
+
+        .content {
+          padding: 20px 15px;
+        }
+
+        .filter-section {
+          flex-direction: column;
+        }
+
+        .apply-btn {
+          align-self: stretch;
+          margin-left: 0;
+        }
+
+        .chart-wrapper {
+          height: 250px;
+        }
+      }
+
+      @media (min-width: 992px) {
+        .chart-container {
+          grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
+        }
+      }
+
+      /* Animations */
+      @keyframes fadeInUp {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .animate-card {
+        animation: fadeInUp 0.5s ease forwards;
+        opacity: 0;
+      }
+
+      .delay-1 {
+        animation-delay: 0.1s;
+      }
+      .delay-2 {
+        animation-delay: 0.2s;
+      }
+      .delay-3 {
+        animation-delay: 0.3s;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Overlay -->
+    <div class="overlay" id="overlay"></div>
+
+    <!-- Sidebar/Navigasi -->
+    <div class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <h2>Absensi Karyawan</h2>
+        <p>Menu Navigasi</p>
+      </div>
+      <div class="sidebar-menu">
+        <a href="menu.html" class="menu-item">
+          <i class="material-icons">home</i>
+          <span>Beranda</span>
+        </a>
+        <a
+          href="profile.html?name=${currentUser.fullName}"
+          class="menu-item"
+          id="profileMenuItem"
+        >
+          <i class="material-icons">person</i>
+          <span>Profil Saya</span>
+        </a>
+        <a href="histori.html" class="menu-item">
+          <i class="material-icons">history</i>
+          <span>Histori Absensi</span>
+        </a>
+        <a href="shift.html" class="menu-item">
+          <i class="material-icons">schedule</i>
+          <span>Shift Kerja</span>
+        </a>
+        <a href="grafik.html" class="menu-item">
+          <i class="material-icons">bar_chart</i>
+          <span>Grafik Absen</span>
+        </a>
+        <a href="#" class="menu-item" id="logoutMenuItem">
+          <i class="material-icons">logout</i>
+          <span>Keluar</span>
+        </a>
+      </div>
+    </div>
+
+    <!-- Top Bar -->
+    <div class="top-bar">
+      <div class="menu-left">
+        <i class="material-icons menu-icon" id="menuButton">menu</i>
+        <span class="page-title">Grafik Absensi</span>
+      </div>
+      <div class="user-profile" id="userProfile">
+        <img
+          src="https://ui-avatars.com/api/?name=Karyawan&background=4A6FA5&color=fff"
+          alt="Profile"
+        />
+      </div>
+    </div>
+
+    <!-- Konten Utama -->
+    <div class="content">
+      <div class="welcome-message animate__animated animate__fadeIn">
+        <h1 id="welcomeTitle">Grafik Absensi</h1>
+        <p id="welcomeSubtitle">Analisis data kehadiran Anda secara visual</p>
+      </div>
+
+      <!-- Filter Section -->
+      <div class="filter-section animate-card delay-1">
+        <div class="filter-group">
+          <label class="filter-label">Periode</label>
+          <select class="filter-select" id="periodSelect">
+            <option value="month">Bulan Ini</option>
+            <option value="week">Minggu Ini</option>
+            <option value="year">Tahun Ini</option>
+            <option value="custom">Kustom</option>
+          </select>
+        </div>
+        <div class="filter-group" id="monthGroup">
+          <label class="filter-label">Bulan</label>
+          <select class="filter-select" id="monthSelect">
+            <option value="0">Januari</option>
+            <option value="1">Februari</option>
+            <option value="2">Maret</option>
+            <option value="3">April</option>
+            <option value="4">Mei</option>
+            <option value="5">Juni</option>
+            <option value="6">Juli</option>
+            <option value="7">Agustus</option>
+            <option value="8">September</option>
+            <option value="9">Oktober</option>
+            <option value="10">November</option>
+            <option value="11">Desember</option>
+          </select>
+        </div>
+        <div class="filter-group" id="yearGroup">
+          <label class="filter-label">Tahun</label>
+          <select class="filter-select" id="yearSelect">
+            <option value="2023">2023</option>
+            <option value="2024">2024</option>
+            <option value="2025" selected>2025</option>
+          </select>
+        </div>
+        <button class="apply-btn" id="applyFilter">
+          <i class="material-icons">filter_alt</i> Terapkan
+        </button>
+      </div>
+
+      <!-- Stats Cards -->
+      <div class="stats-container">
+        <div class="stat-card animate-card delay-1">
+          <div class="stat-icon">
+            <i class="material-icons">check_circle</i>
+          </div>
+          <div class="stat-value" id="presentCount">0</div>
+          <div class="stat-label">Hadir</div>
+        </div>
+        <div class="stat-card animate-card delay-2">
+          <div class="stat-icon">
+            <i class="material-icons">watch_later</i>
+          </div>
+          <div class="stat-value" id="lateCount">0</div>
+          <div class="stat-label">Terlambat</div>
+        </div>
+        <div class="stat-card animate-card delay-3">
+          <div class="stat-icon">
+            <i class="material-icons">beach_access</i>
+          </div>
+          <div class="stat-value" id="leaveCount">0</div>
+          <div class="stat-label">Izin/Cuti</div>
+        </div>
+        <div class="stat-card animate-card">
+          <div class="stat-icon">
+            <i class="material-icons">local_hospital</i>
+          </div>
+          <div class="stat-value" id="sickCount">0</div>
+          <div class="stat-label">Sakit</div>
+        </div>
+      </div>
+
+      <!-- Chart Container -->
+      <div class="chart-container">
+        <div class="chart-card animate-card delay-1">
+          <div class="chart-header">
+            <h3 class="chart-title">Kehadiran Harian</h3>
+            <span class="chart-period" id="dailyChartPeriod">Bulan April 2025</span>
+          </div>
+          <div class="chart-wrapper">
+            <canvas id="dailyChart"></canvas>
+          </div>
+        </div>
+        <div class="chart-card animate-card delay-2">
+          <div class="chart-header">
+            <h3 class="chart-title">Status Kehadiran</h3>
+            <span class="chart-period" id="statusChartPeriod">Bulan April 2025</span>
+          </div>
+          <div class="chart-wrapper">
+            <canvas id="statusChart"></canvas>
+          </div>
+        </div>
+        <div class="chart-card animate-card delay-3">
+          <div class="chart-header">
+            <h3 class="chart-title">Jam Masuk</h3>
+            <span class="chart-period" id="timeChartPeriod">Bulan April 2025</span>
+          </div>
+          <div class="chart-wrapper">
+            <canvas id="timeChart"></canvas>
+          </div>
+        </div>
+        <div class="chart-card animate-card">
+          <div class="chart-header">
+            <h3 class="chart-title">Kehadiran Bulanan</h3>
+            <span class="chart-period" id="monthlyChartPeriod">Tahun 2025</span>
+          </div>
+          <div class="chart-wrapper">
+            <canvas id="monthlyChart"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bottom Bar -->
+    <div class="bottom-bar">
+      <p>© 2025 Sistem Absensi Karyawan</p>
+    </div>
+
+    <script>
+      // Fungsi untuk menampilkan data user yang login
+      function displayUserProfile() {
+        const currentUser = JSON.parse(localStorage.getItem("currentUser"));
+
+        if (currentUser) {
+          // Update welcome message with full name
+          document.getElementById(
+            "welcomeTitle"
+          ).textContent = `Grafik Absensi ${currentUser.fullName || "Anda"}`;
+          document.getElementById(
+            "welcomeSubtitle"
+          ).textContent = `Analisis data kehadiran ${currentUser.fullName || "Anda"}`;
+
+          // Update profile picture using full name
+          const nameForAvatar = currentUser.fullName
+            ? currentUser.fullName.split(" ").slice(0, 2).join(" ")
+            : "Karyawan";
+          document.getElementById("userProfile").innerHTML = `
+                    <img src="https://ui-avatars.com/api/?name=${encodeURIComponent(
+                      nameForAvatar
+                    )}&background=4A6FA5&color=fff" alt="Profile">
+                `;
+
+          // Update profile menu link
+          document.getElementById(
+            "profileMenuItem"
+          ).href = `profile.html?name=${encodeURIComponent(
+            currentUser.fullName
+          )}`;
+        }
+      }
+
+      // Fungsi untuk logout
+      function setupLogout() {
+        document
+          .getElementById("logoutMenuItem")
+          .addEventListener("click", function (e) {
+            e.preventDefault();
+            localStorage.removeItem("currentUser");
+            window.location.href = "login.html";
+          });
+      }
+
+      // Fungsi untuk sidebar
+      function setupSidebar() {
+        const menuButton = document.getElementById("menuButton");
+        const sidebar = document.getElementById("sidebar");
+        const overlay = document.getElementById("overlay");
+
+        menuButton.addEventListener("click", function () {
+          sidebar.classList.toggle("active");
+          overlay.classList.toggle("active");
+        });
+
+        overlay.addEventListener("click", function () {
+          sidebar.classList.remove("active");
+          overlay.classList.remove("active");
+        });
+      }
+
+      // Fungsi untuk setup filter
+      function setupFilters() {
+        const periodSelect = document.getElementById("periodSelect");
+        const monthGroup = document.getElementById("monthGroup");
+        const yearGroup = document.getElementById("yearGroup");
+        const applyBtn = document.getElementById("applyFilter");
+
+        // Set current month and year
+        const currentDate = new Date();
+        document.getElementById("monthSelect").value = currentDate.getMonth();
+        document.getElementById("yearSelect").value = currentDate.getFullYear();
+
+        // Toggle month/year visibility based on period
+        periodSelect.addEventListener("change", function() {
+          if (this.value === "month" || this.value === "custom") {
+            monthGroup.style.display = "block";
+            yearGroup.style.display = "block";
+          } else if (this.value === "year") {
+            monthGroup.style.display = "none";
+            yearGroup.style.display = "block";
+          } else {
+            monthGroup.style.display = "none";
+            yearGroup.style.display = "none";
+          }
+        });
+
+        // Apply filter
+        applyBtn.addEventListener("click", function() {
+          updateCharts();
+        });
+      }
+
+      // Generate sample attendance data
+      function generateSampleData() {
+        const currentUser = JSON.parse(localStorage.getItem("currentUser"));
+        if (!currentUser) return [];
+        
+        // Check if we already have sample data
+        let attendanceHistory = JSON.parse(localStorage.getItem("attendanceHistory")) || [];
+        
+        if (attendanceHistory.length === 0 || !attendanceHistory[0].userId) {
+          // Generate sample data for the current year
+          const months = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", 
+                         "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
+          const statuses = ["present", "late", "leave", "sick"];
+          const statusWeights = [70, 15, 10, 5]; // 70% present, 15% late, etc.
+          
+          const currentYear = new Date().getFullYear();
+          
+          for (let month = 0; month < 12; month++) {
+            const daysInMonth = new Date(currentYear, month + 1, 0).getDate();
+            
+            for (let day = 1; day <= daysInMonth; day++) {
+              // Skip weekends (optional)
+              const date = new Date(currentYear, month, day);
+              if (date.getDay() === 0 || date.getDay() === 6) continue;
+              
+              // Randomly decide if there's an attendance record (90% chance)
+              if (Math.random() > 0.1) {
+                // Choose status based on weights
+                const random = Math.random() * 100;
+                let statusIndex = 0;
+                let weightSum = 0;
+                
+                for (let i = 0; i < statusWeights.length; i++) {
+                  weightSum += statusWeights[i];
+                  if (random <= weightSum) {
+                    statusIndex = i;
+                    break;
+                  }
+                }
+                
+                const status = statuses[statusIndex];
+                
+                // Generate random time based on status
+                let hours, minutes;
+                if (status === "present") {
+                  hours = 7 + Math.floor(Math.random() * 2); // 7-8 AM
+                  minutes = Math.floor(Math.random() * 60);
+                } else if (status === "late") {
+                  hours = 8 + Math.floor(Math.random() * 3); // 8-11 AM
+                  minutes = Math.floor(Math.random() * 60);
+                } else {
+                  hours = 0;
+                  minutes = 0;
+                }
+                
+                const attendanceTime = new Date(currentYear, month, day, hours, minutes);
+                
+                attendanceHistory.push({
+                  id: attendanceTime.getTime(),
+                  userId: currentUser.email,
+                  userName: currentUser.fullName || "Karyawan",
+                  dateTime: attendanceTime.toLocaleString("id-ID", {
+                    weekday: "long",
+                    year: "numeric",
+                    month: "long",
+                    day: "numeric",
+                    hour: "2-digit",
+                    minute: "2-digit"
+                  }),
+                  location: "Kantor Pusat",
+                  status: status,
+                  note: status === "leave" ? "Ijin pribadi" : 
+                        status === "sick" ? "Sakit demam" : "",
+                  dateStr: attendanceTime.toISOString().split('T')[0]
+                });
+              }
+            }
+          }
+          
+          localStorage.setItem("attendanceHistory", JSON.stringify(attendanceHistory));
+        }
+        
+        return attendanceHistory;
+      }
+
+      // Filter data based on selected period
+      function filterData(period) {
+        const currentUser = JSON.parse(localStorage.getItem("currentUser"));
+        if (!currentUser) return [];
+        
+        const attendanceHistory = JSON.parse(localStorage.getItem("attendanceHistory")) || [];
+        const userAttendance = attendanceHistory.filter(record => record.userId === currentUser.email);
+        
+        const now = new Date();
+        const currentMonth = now.getMonth();
+        const currentYear = now.getFullYear();
+        
+        let filteredData = [];
+        
+        switch (period) {
+          case "week":
+            // Get start of current week (Monday)
+            const startOfWeek = new Date(now);
+            startOfWeek.setDate(now.getDate() - now.getDay() + (now.getDay() === 0 ? -6 : 1));
+            startOfWeek.setHours(0, 0, 0, 0);
+            
+            // Get end of week (Sunday)
+            const endOfWeek = new Date(startOfWeek);
+            endOfWeek.setDate(startOfWeek.getDate() + 6);
+            endOfWeek.setHours(23, 59, 59, 999);
+            
+            filteredData = userAttendance.filter(record => {
+              const recordDate = new Date(record.id);
+              return recordDate >= startOfWeek && recordDate <= endOfWeek;
+            });
+            break;
+            
+          case "month":
+            const selectedMonth = parseInt(document.getElementById("monthSelect").value);
+            const selectedYear = parseInt(document.getElementById("yearSelect").value);
+            
+            filteredData = userAttendance.filter(record => {
+              const recordDate = new Date(record.id);
+              return recordDate.getMonth() === selectedMonth && 
+                     recordDate.getFullYear() === selectedYear;
+            });
+            break;
+            
+          case "year":
+            const year = parseInt(document.getElementById("yearSelect").value);
+            
+            filteredData = userAttendance.filter(record => {
+              const recordDate = new Date(record.id);
+              return recordDate.getFullYear() === year;
+            });
+            break;
+            
+          case "custom":
+            // In a real app, you would implement custom date range selection
+            // For this demo, we'll use the selected month
+            const customMonth = parseInt(document.getElementById("monthSelect").value);
+            const customYear = parseInt(document.getElementById("yearSelect").value);
+            
+            filteredData = userAttendance.filter(record => {
+              const recordDate = new Date(record.id);
+              return recordDate.getMonth() === customMonth && 
+                     recordDate.getFullYear() === customYear;
+            });
+            break;
+            
+          default:
+            // Default to current month
+            filteredData = userAttendance.filter(record => {
+              const recordDate = new Date(record.id);
+              return recordDate.getMonth() === currentMonth && 
+                     recordDate.getFullYear() === currentYear;
+            });
+        }
+        
+        return filteredData;
+      }
+
+      // Update stats cards
+      function updateStats(data) {
+        const presentCount = data.filter(d => d.status === "present").length;
+        const lateCount = data.filter(d => d.status === "late").length;
+        const leaveCount = data.filter(d => d.status === "leave").length;
+        const sickCount = data.filter(d => d.status === "sick").length;
+        
+        document.getElementById("presentCount").textContent = presentCount;
+        document.getElementById("lateCount").textContent = lateCount;
+        document.getElementById("leaveCount").textContent = leaveCount;
+        document.getElementById("sickCount").textContent = sickCount;
+      }
+
+      // Initialize charts
+      let dailyChart, statusChart, timeChart, monthlyChart;
+
+      function initCharts() {
+        // Daily Attendance Chart (Bar)
+        const dailyCtx = document.getElementById("dailyChart").getContext("2d");
+        dailyChart = new Chart(dailyCtx, {
+          type: "bar",
+          data: {
+            labels: [],
+            datasets: [
+              {
+                label: "Hadir",
+                data: [],
+                backgroundColor: "#4a6fa5",
+                borderColor: "#3a5a8f",
+                borderWidth: 1
+              },
+              {
+                label: "Terlambat",
+                data: [],
+                backgroundColor: "#ff7e5f",
+                borderColor: "#e06e50",
+                borderWidth: 1
+              }
+            ]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+              y: {
+                beginAtZero: true,
+                ticks: {
+                  stepSize: 1
+                }
+              }
+            },
+            plugins: {
+              legend: {
+                position: "top"
+              },
+              tooltip: {
+                callbacks: {
+                  label: function(context) {
+                    return `${context.dataset.label}: ${context.raw}`;
+                  }
+                }
+              }
+            }
+          }
+        });
+
+        // Status Pie Chart
+        const statusCtx = document.getElementById("statusChart").getContext("2d");
+        statusChart = new Chart(statusCtx, {
+          type: "doughnut",
+          data: {
+            labels: ["Hadir", "Terlambat", "Izin/Cuti", "Sakit"],
+            datasets: [
+              {
+                data: [0, 0, 0, 0],
+                backgroundColor: [
+                  "#4a6fa5",
+                  "#ff7e5f",
+                  "#6fa54a",
+                  "#a54a6f"
+                ],
+                borderWidth: 1
+              }
+            ]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: {
+                position: "right"
+              },
+              tooltip: {
+                callbacks: {
+                  label: function(context) {
+                    const label = context.label || '';
+                    const value = context.raw || 0;
+                    const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                    const percentage = Math.round((value / total) * 100) || 0;
+                    return `${label}: ${value} (${percentage}%)`;
+                  }
+                }
+              }
+            }
+          }
+        });
+
+        // Time Distribution Chart (Line)
+        const timeCtx = document.getElementById("timeChart").getContext("2d");
+        timeChart = new Chart(timeCtx, {
+          type: "line",
+          data: {
+            labels: Array.from({length: 24}, (_, i) => `${i}:00`),
+            datasets: [
+              {
+                label: "Jam Masuk",
+                data: Array(24).fill(0),
+                backgroundColor: "rgba(74, 111, 165, 0.2)",
+                borderColor: "#4a6fa5",
+                borderWidth: 2,
+                tension: 0.3,
+                fill: true
+              }
+            ]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+              y: {
+                beginAtZero: true
+              }
+            },
+            plugins: {
+              legend: {
+                display: false
+              }
+            }
+          }
+        });
+
+        // Monthly Attendance Chart (Bar)
+        const monthlyCtx = document.getElementById("monthlyChart").getContext("2d");
+        monthlyChart = new Chart(monthlyCtx, {
+          type: "bar",
+          data: {
+            labels: ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Agu", "Sep", "Okt", "Nov", "Des"],
+            datasets: [
+              {
+                label: "Kehadiran",
+                data: Array(12).fill(0),
+                backgroundColor: "#4a6fa5",
+                borderColor: "#3a5a8f",
+                borderWidth: 1
+              }
+            ]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+              y: {
+                beginAtZero: true,
+                ticks: {
+                  stepSize: 1
+                }
+              }
+            },
+            plugins: {
+              legend: {
+                position: "top"
+              },
+              tooltip: {
+                callbacks: {
+                  label: function(context) {
+                    return `${context.dataset.label}: ${context.raw}`;
+                  }
+                }
+              }
+            }
+          }
+        });
+      }
+
+      // Update charts with filtered data
+      function updateCharts() {
+        const period = document.getElementById("periodSelect").value;
+        const filteredData = filterData(period);
+        
+        // Update stats cards
+        updateStats(filteredData);
+        
+        // Update daily chart
+        const dailyLabels = [];
+        const presentData = [];
+        const lateData = [];
+        
+        if (period === "week") {
+          // For weekly view, show days of the week
+          const days = ["Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu", "Minggu"];
+          const now = new Date();
+          const startOfWeek = new Date(now);
+          startOfWeek.setDate(now.getDate() - now.getDay() + (now.getDay() === 0 ? -6 : 1));
+          
+          for (let i = 0; i < 7; i++) {
+            const day = new Date(startOfWeek);
+            day.setDate(startOfWeek.getDate() + i);
+            dailyLabels.push(days[i]);
+            
+            const dayData = filteredData.filter(d => {
+              const recordDate = new Date(d.id);
+              return recordDate.getDate() === day.getDate();
+            });
+            
+            presentData.push(dayData.filter(d => d.status === "present").length);
+            lateData.push(dayData.filter(d => d.status === "late").length);
+          }
+        } else {
+          // For monthly view, show days of the month
+          const selectedMonth = parseInt(document.getElementById("monthSelect").value);
+          const selectedYear = parseInt(document.getElementById("yearSelect").value);
+          const daysInMonth = new Date(selectedYear, selectedMonth + 1, 0).getDate();
+          
+          for (let day = 1; day <= daysInMonth; day++) {
+            dailyLabels.push(day);
+            
+            const dayData = filteredData.filter(d => {
+              const recordDate = new Date(d.id);
+              return recordDate.getDate() === day;
+            });
+            
+            presentData.push(dayData.filter(d => d.status === "present").length);
+            lateData.push(dayData.filter(d => d.status === "late").length);
+          }
+        }
+        
+        dailyChart.data.labels = dailyLabels;
+        dailyChart.data.datasets[0].data = presentData;
+        dailyChart.data.datasets[1].data = lateData;
+        dailyChart.update();
+        
+        // Update status chart
+        const statusData = [
+          filteredData.filter(d => d.status === "present").length,
+          filteredData.filter(d => d.status === "late").length,
+          filteredData.filter(d => d.status === "leave").length,
+          filteredData.filter(d => d.status === "sick").length
+        ];
+        
+        statusChart.data.datasets[0].data = statusData;
+        statusChart.update();
+        
+        // Update time chart
+        const timeData = Array(24).fill(0);
+        filteredData.forEach(d => {
+          if (d.status === "present" || d.status === "late") {
+            const recordDate = new Date(d.id);
+            const hour = recordDate.getHours();
+            timeData[hour]++;
+          }
+        });
+        
+        timeChart.data.datasets[0].data = timeData;
+        timeChart.update();
+        
+        // Update monthly chart
+        if (period === "year") {
+          const monthlyData = Array(12).fill(0);
+          filteredData.forEach(d => {
+            const recordDate = new Date(d.id);
+            const month = recordDate.getMonth();
+            monthlyData[month]++;
+          });
+          
+          monthlyChart.data.datasets[0].data = monthlyData;
+          monthlyChart.update();
+        }
+        
+        // Update chart periods
+        const monthNames = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", 
+                           "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
+        const selectedMonth = parseInt(document.getElementById("monthSelect").value);
+        const selectedYear = parseInt(document.getElementById("yearSelect").value);
+        
+        document.getElementById("dailyChartPeriod").textContent = 
+          period === "week" ? "Minggu Ini" : 
+          `Bulan ${monthNames[selectedMonth]} ${selectedYear}`;
+        
+        document.getElementById("statusChartPeriod").textContent = 
+          period === "week" ? "Minggu Ini" : 
+          `Bulan ${monthNames[selectedMonth]} ${selectedYear}`;
+        
+        document.getElementById("timeChartPeriod").textContent = 
+          period === "week" ? "Minggu Ini" : 
+          `Bulan ${monthNames[selectedMonth]} ${selectedYear}`;
+        
+        document.getElementById("monthlyChartPeriod").textContent = 
+          `Tahun ${selectedYear}`;
+      }
+
+      // Initialize the page
+      function init() {
+        displayUserProfile();
+        setupLogout();
+        setupSidebar();
+        setupFilters();
+        generateSampleData();
+        initCharts();
+        updateCharts();
+      }
+
+      // Run initialization when the page loads
+      document.addEventListener("DOMContentLoaded", init);
+    </script>
+  </body>
+</html>

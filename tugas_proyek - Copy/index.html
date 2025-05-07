@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Absensi Karyawan</title>
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    <style>
+        :root {
+            --primary-color: #4A6FA5;
+            --secondary-color: #B9DCFF;
+            --accent-color: #FF7E5F;
+            --light-color: #F8F9FA;
+            --dark-color: #343A40;
+            --shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Kanit', sans-serif;
+        }
+        
+        body {
+            background-color: var(--light-color);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: var(--dark-color);
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 800px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 40px 20px;
+        }
+        
+        .logo-container {
+            width: 200px;
+            height: 200px;
+            margin-bottom: 30px;
+            animation: fadeInUp 0.8s ease;
+        }
+        
+        .logo-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            border-radius: 50%;
+            box-shadow: var(--shadow);
+            border: 5px solid white;
+        }
+        
+        .title {
+            text-align: center;
+            margin-bottom: 40px;
+            color: var(--primary-color);
+            font-size: 2.5rem;
+            font-weight: 500;
+            text-shadow: 0 4px 4px rgba(0, 0, 0, 0.1);
+            animation: fadeInUp 0.8s ease 0.2s both;
+        }
+        
+        .button-container {
+            width: 100%;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 25px;
+            max-width: 600px;
+            animation: fadeInUp 0.8s ease 0.4s both;
+        }
+        
+        .button {
+            border-radius: 15px;
+            box-shadow: var(--shadow);
+            cursor: pointer;
+            text-align: center;
+            padding: 25px 0;
+            font-size: 1.3rem;
+            font-weight: 400;
+            transition: var(--transition);
+            text-decoration: none;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+            background-color: white;
+            color: var(--dark-color);
+        }
+        
+        .button:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+        }
+        
+        .button:active {
+            transform: translateY(0);
+        }
+        
+        .button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: linear-gradient(90deg, var(--primary-color), var(--accent-color));
+        }
+        
+        .button i {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+            color: var(--primary-color);
+        }
+        
+        .login-button {
+            border: 2px solid var(--primary-color);
+        }
+        
+        .register-button {
+            background: linear-gradient(135deg, var(--secondary-color) 0%, var(--primary-color) 100%);
+            color: white;
+        }
+        
+        .register-button i {
+            color: white;
+        }
+        
+        .footer {
+            margin-top: 40px;
+            color: var(--dark-color);
+            opacity: 0.7;
+            font-size: 0.9rem;
+            text-align: center;
+            animation: fadeInUp 0.8s ease 0.6s both;
+        }
+        
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .logo-container {
+                width: 150px;
+                height: 150px;
+            }
+            
+            .title {
+                font-size: 2rem;
+            }
+            
+            .button-container {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+            
+            .button {
+                padding: 20px 0;
+                font-size: 1.1rem;
+            }
+        }
+        
+        @media (min-width: 992px) {
+            .button-container {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo-container animate__animated animate__fadeIn">
+            <img src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" alt="People Logo">
+        </div>
+        
+        <h1 class="title">Absensi Karyawan</h1>
+        
+        <div class="button-container">
+            <a href="login.html" class="button login-button animate__animated animate__fadeIn">
+                <i class="material-icons">login</i>
+                Login
+            </a>
+            <a href="register.html" class="button register-button animate__animated animate__fadeIn">
+                <i class="material-icons">person_add</i>
+                Daftar
+            </a>
+        </div>
+        
+        <p class="footer animate__animated animate__fadeIn">© 2023 Sistem Absensi Karyawan</p>
+    </div>
+
+    <script>
+        // Tambahkan efek hover yang lebih smooth
+        document.querySelectorAll('.button').forEach(button => {
+            button.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateY(-5px)';
+                this.style.boxShadow = '0 10px 25px rgba(0,0,0,0.15)';
+            });
+            
+            button.addEventListener('mouseleave', function() {
+                this.style.transform = '';
+                this.style.boxShadow = 'var(--shadow)';
+            });
+            
+            button.addEventListener('mousedown', function() {
+                this.style.transform = 'translateY(0)';
+            });
+            
+            button.addEventListener('mouseup', function() {
+                this.style.transform = 'translateY(-5px)';
+            });
+        });
+    </script>
+</body>
+</html>

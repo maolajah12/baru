@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daftar Akun</title>
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    <style>
+        :root {
+            --primary-color: #4A6FA5;
+            --secondary-color: #B9DCFF;
+            --accent-color: #FF7E5F;
+            --light-color: #F8F9FA;
+            --dark-color: #343A40;
+            --shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Kanit', sans-serif;
+        }
+        
+        body {
+            background-color: var(--light-color);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            color: var(--dark-color);
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 40px 25px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .logo-container {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 30px;
+            border-radius: 50%;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            border: 3px solid white;
+            animation: fadeInUp 0.6s ease;
+        }
+        
+        .logo-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .title {
+            text-align: center;
+            color: var(--primary-color);
+            font-size: 1.8rem;
+            font-weight: 500;
+            margin-bottom: 30px;
+            animation: fadeInUp 0.6s ease 0.2s both;
+        }
+        
+        .form-container {
+            background-color: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: var(--shadow);
+            animation: fadeInUp 0.6s ease 0.4s both;
+        }
+        
+        .form-group {
+            margin-bottom: 25px;
+        }
+        
+        .form-label {
+            color: var(--dark-color);
+            font-size: 1rem;
+            font-weight: 400;
+            margin-bottom: 8px;
+            display: block;
+        }
+        
+        .text-field {
+            width: 100%;
+            height: 50px;
+            background-color: rgba(185, 220, 255, 0.3);
+            border-radius: 10px;
+            border: 1px solid var(--secondary-color);
+            padding: 0 15px;
+            font-size: 1rem;
+            transition: var(--transition);
+        }
+        
+        .text-field:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 2px rgba(74, 111, 165, 0.2);
+        }
+        
+        .gender-container {
+            display: flex;
+            gap: 15px;
+            margin-top: 10px;
+        }
+        
+        .gender-option {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            padding: 12px;
+            border-radius: 10px;
+            border: 1px solid var(--secondary-color);
+            transition: var(--transition);
+        }
+        
+        .gender-option:hover {
+            background-color: rgba(185, 220, 255, 0.2);
+        }
+        
+        .gender-option.selected {
+            background-color: var(--secondary-color);
+            border-color: var(--primary-color);
+        }
+        
+        .gender-circle {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            border: 1px solid var(--primary-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-right: 10px;
+            transition: var(--transition);
+        }
+        
+        .gender-circle.selected {
+            background-color: var(--primary-color);
+        }
+        
+        .gender-circle.selected::after {
+            content: '';
+            display: block;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background-color: white;
+        }
+        
+        .gender-text {
+            color: var(--dark-color);
+            font-size: 0.95rem;
+            font-weight: 400;
+        }
+        
+        .register-button {
+            width: 100%;
+            height: 55px;
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--accent-color) 100%);
+            border-radius: 10px;
+            border: none;
+            color: white;
+            font-size: 1.1rem;
+            font-weight: 500;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: var(--transition);
+            margin-top: 10px;
+            box-shadow: 0 4px 15px rgba(74, 111, 165, 0.3);
+        }
+        
+        .register-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(74, 111, 165, 0.4);
+        }
+        
+        .register-button:active {
+            transform: translateY(0);
+        }
+        
+        .error {
+            color: var(--accent-color);
+            font-size: 0.8rem;
+            margin-top: 5px;
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        .footer {
+            text-align: center;
+            color: var(--dark-color);
+            opacity: 0.7;
+            font-size: 0.8rem;
+            margin-top: 30px;
+            animation: fadeInUp 0.6s ease 0.6s both;
+        }
+        
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 30px 20px;
+            }
+            
+            .logo-container {
+                width: 70px;
+                height: 70px;
+                margin-bottom: 20px;
+            }
+            
+            .title {
+                font-size: 1.5rem;
+                margin-bottom: 20px;
+            }
+            
+            .form-container {
+                padding: 20px;
+            }
+            
+            .gender-container {
+                flex-direction: column;
+                gap: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo-container animate__animated animate__fadeIn">
+            <img src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" alt="People Logo">
+        </div>
+        
+        <h1 class="title">Daftar Akun</h1>
+        
+        <div class="form-container">
+            <form id="registerForm">
+                <div class="form-group">
+                    <label class="form-label">Nama Lengkap</label>
+                    <input type="text" class="text-field" id="namaField" placeholder="Masukkan nama lengkap" required>
+                    <div class="error" id="namaError">Nama lengkap harus diisi</div>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Email</label>
+                    <input type="email" class="text-field" id="emailField" placeholder="Masukkan alamat email" required>
+                    <div class="error" id="emailError">Email harus diisi dengan benar</div>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Nomor Karyawan</label>
+                    <input type="text" class="text-field" id="nomorField" placeholder="Masukkan nomor karyawan" required>
+                    <div class="error" id="nomorError">Nomor karyawan harus diisi</div>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Jenis Kelamin</label>
+                    <div class="gender-container">
+                        <div class="gender-option" id="maleOption">
+                            <div class="gender-circle" id="maleCircle"></div>
+                            <span class="gender-text">Laki-laki</span>
+                        </div>
+                        <div class="gender-option" id="femaleOption">
+                            <div class="gender-circle" id="femaleCircle"></div>
+                            <span class="gender-text">Perempuan</span>
+                        </div>
+                    </div>
+                    <div class="error" id="genderError">Pilih jenis kelamin</div>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Password</label>
+                    <input type="password" class="text-field" id="passwordField" placeholder="Masukkan password" required>
+                    <div class="error" id="passwordError">Password harus diisi</div>
+                </div>
+                
+                <button type="button" class="register-button" id="registerButton">
+                    <i class="material-icons" style="margin-right: 8px;">person_add</i>
+                    Daftar Sekarang
+                </button>
+            </form>
+        </div>
+        
+        <p class="footer">© 2023 Sistem Absensi Karyawan</p>
+    </div>
+
+    <!-- register.html (updated script section) -->
+    <script>
+        // Gender selection
+        const maleOption = document.getElementById('maleOption');
+        const femaleOption = document.getElementById('femaleOption');
+        const maleCircle = document.getElementById('maleCircle');
+        const femaleCircle = document.getElementById('femaleCircle');
+        let selectedGender = null;
+        
+        maleOption.addEventListener('click', function() {
+            selectedGender = 'male';
+            maleOption.classList.add('selected');
+            maleCircle.classList.add('selected');
+            femaleOption.classList.remove('selected');
+            femaleCircle.classList.remove('selected');
+            document.getElementById('genderError').style.display = 'none';
+        });
+        
+        femaleOption.addEventListener('click', function() {
+            selectedGender = 'female';
+            femaleOption.classList.add('selected');
+            femaleCircle.classList.add('selected');
+            maleOption.classList.remove('selected');
+            maleCircle.classList.remove('selected');
+            document.getElementById('genderError').style.display = 'none';
+        });
+        
+        // Form validation
+        document.getElementById('registerButton').addEventListener('click', function() {
+            let isValid = true;
+            const namaField = document.getElementById('namaField');
+            const emailField = document.getElementById('emailField');
+            const nomorField = document.getElementById('nomorField');
+            const passwordField = document.getElementById('passwordField');
+            
+            // Reset errors
+            document.querySelectorAll('.error').forEach(el => el.style.display = 'none');
+            
+            // Validate fields
+            if (!namaField.value.trim()) {
+                document.getElementById('namaError').style.display = 'block';
+                isValid = false;
+                namaField.focus();
+            }
+            
+            if (!emailField.value.trim() || !validateEmail(emailField.value)) {
+                document.getElementById('emailError').style.display = 'block';
+                isValid = false;
+                if (isValid) emailField.focus();
+            }
+            
+            if (!nomorField.value.trim()) {
+                document.getElementById('nomorError').style.display = 'block';
+                isValid = false;
+                if (isValid) nomorField.focus();
+            }
+            
+            if (!passwordField.value.trim()) {
+                document.getElementById('passwordError').style.display = 'block';
+                isValid = false;
+                if (isValid) passwordField.focus();
+            }
+            
+            if (!selectedGender) {
+                document.getElementById('genderError').style.display = 'block';
+                isValid = false;
+            }
+            
+            if (isValid) {
+                // Add loading effect
+                const button = document.getElementById('registerButton');
+                button.innerHTML = '<i class="material-icons" style="margin-right: 8px;">hourglass_empty</i> Memproses...';
+                button.disabled = true;
+                
+                // Store user data
+                const userData = {
+                    fullName: namaField.value.trim(),
+                    email: emailField.value.trim(),
+                    employeeNumber: nomorField.value.trim(),
+                    gender: selectedGender,
+                    password: passwordField.value.trim(),
+                    registeredAt: new Date().toISOString()
+                };
+                
+                // Get existing users or initialize empty array
+                const users = JSON.parse(localStorage.getItem('users')) || [];
+                
+                // Check if email already exists
+                if (users.some(user => user.email === userData.email)) {
+                    document.getElementById('emailError').textContent = 'Email sudah terdaftar';
+                    document.getElementById('emailError').style.display = 'block';
+                    button.innerHTML = '<i class="material-icons" style="margin-right: 8px;">person_add</i> Daftar Sekarang';
+                    button.disabled = false;
+                    return;
+                }
+                
+                // Add new user
+                users.push(userData);
+                localStorage.setItem('users', JSON.stringify(users));
+                
+                // Simulate API call
+                setTimeout(() => {
+                    alert(`Pendaftaran berhasil!\nSelamat datang ${userData.fullName}`);
+                    window.location.href = 'login.html';
+                }, 1500);
+            }
+        });
+        
+        // Email validation function
+        function validateEmail(email) {
+            const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+            return re.test(String(email).toLowerCase());
+        }
+        
+        // Add animation to form elements when they come into view
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = 1;
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, { threshold: 0.1 });
+        
+        document.querySelectorAll('.form-group').forEach((group, index) => {
+            group.style.opacity = 0;
+            group.style.transform = 'translateY(20px)';
+            group.style.transition = `all 0.3s ease ${0.1 + (index * 0.1)}s`;
+            observer.observe(group);
+        });
+    </script>
+</body>
+</html>

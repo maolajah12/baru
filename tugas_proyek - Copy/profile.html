@@ -1,0 +1,760 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Profil Karyawan</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/icon?family=Material+Icons"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"
+    />
+    <style>
+      :root {
+        --primary-color: #4a6fa5;
+        --secondary-color: #b9dcff;
+        --accent-color: #ff7e5f;
+        --light-color: #f8f9fa;
+        --dark-color: #343a40;
+        --shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        --shadow-hover: 0 8px 25px rgba(0, 0, 0, 0.15);
+        --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        --gradient: linear-gradient(
+          135deg,
+          var(--primary-color) 0%,
+          #6b8cbe 100%
+        );
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: "Kanit", sans-serif;
+      }
+
+      body {
+        background-color: var(--light-color);
+        min-height: 100vh;
+        color: var(--dark-color);
+        position: relative;
+      }
+
+      .container {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 20px;
+      }
+
+      .profile-header {
+        text-align: center;
+        margin-bottom: 30px;
+        animation: fadeIn 0.8s ease-out;
+        position: relative;
+      }
+
+      .profile-avatar {
+        width: 120px;
+        height: 120px;
+        border-radius: 50%;
+        margin: 0 auto 20px;
+        overflow: hidden;
+        box-shadow: 0 5px 15px rgba(74, 111, 165, 0.2);
+        border: 4px solid white;
+        position: relative;
+        cursor: pointer;
+        transition: var(--transition);
+      }
+
+      .profile-avatar:hover {
+        transform: scale(1.05);
+      }
+
+      .profile-avatar img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+
+      .profile-avatar-edit {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: rgba(0, 0, 0, 0.5);
+        color: white;
+        padding: 5px;
+        text-align: center;
+        font-size: 12px;
+        opacity: 0;
+        transition: var(--transition);
+      }
+
+      .profile-avatar:hover .profile-avatar-edit {
+        opacity: 1;
+      }
+
+      .profile-name {
+        color: var(--primary-color);
+        font-size: 24px;
+        font-weight: 500;
+        margin-bottom: 5px;
+      }
+
+      .profile-email {
+        color: var(--dark-color);
+        opacity: 0.8;
+        font-weight: 300;
+        margin-bottom: 15px;
+      }
+
+      .profile-card {
+        background: white;
+        border-radius: 15px;
+        box-shadow: var(--shadow);
+        padding: 25px;
+        margin-bottom: 20px;
+        position: relative;
+      }
+
+      .profile-card::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 5px;
+        background: var(--gradient);
+        border-radius: 15px 15px 0 0;
+      }
+
+      .card-title {
+        color: var(--primary-color);
+        font-size: 18px;
+        font-weight: 500;
+        margin-bottom: 20px;
+        display: flex;
+        align-items: center;
+      }
+
+      .card-title i {
+        margin-right: 10px;
+      }
+
+      .info-group {
+        display: flex;
+        margin-bottom: 15px;
+        padding-bottom: 15px;
+        border-bottom: 1px solid rgba(74, 111, 165, 0.1);
+      }
+
+      .info-group:last-child {
+        border-bottom: none;
+        margin-bottom: 0;
+        padding-bottom: 0;
+      }
+
+      .info-label {
+        width: 150px;
+        color: var(--primary-color);
+        font-weight: 400;
+      }
+
+      .info-value {
+        flex: 1;
+        color: var(--dark-color);
+      }
+
+      .edit-button {
+        background: var(--gradient);
+        color: white;
+        border: none;
+        border-radius: 10px;
+        padding: 10px 20px;
+        font-size: 14px;
+        font-weight: 500;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        margin-top: 20px;
+        transition: var(--transition);
+      }
+
+      .edit-button:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 5px 15px rgba(74, 111, 165, 0.3);
+      }
+
+      .edit-button i {
+        margin-right: 8px;
+      }
+
+      .back-button {
+        position: absolute;
+        top: 20px;
+        left: 20px;
+        background: var(--primary-color);
+        color: white;
+        border: none;
+        border-radius: 50%;
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        box-shadow: var(--shadow);
+        transition: var(--transition);
+        z-index: 10;
+      }
+
+      .back-button:hover {
+        background: var(--accent-color);
+        transform: translateX(-3px);
+      }
+
+      /* Modal styles */
+      .modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        z-index: 100;
+        justify-content: center;
+        align-items: center;
+      }
+
+      .modal-content {
+        background-color: white;
+        padding: 25px;
+        border-radius: 15px;
+        width: 90%;
+        max-width: 500px;
+        box-shadow: 0 5px 30px rgba(0, 0, 0, 0.3);
+      }
+
+      .modal-title {
+        color: var(--primary-color);
+        margin-bottom: 20px;
+        font-size: 20px;
+        display: flex;
+        align-items: center;
+      }
+
+      .modal-title i {
+        margin-right: 10px;
+      }
+
+      .modal-actions {
+        display: flex;
+        justify-content: flex-end;
+        margin-top: 20px;
+        gap: 10px;
+      }
+
+      .modal-button {
+        padding: 8px 16px;
+        border-radius: 8px;
+        border: none;
+        cursor: pointer;
+        font-weight: 500;
+        transition: var(--transition);
+      }
+
+      .modal-button.primary {
+        background: var(--primary-color);
+        color: white;
+      }
+
+      .modal-button.secondary {
+        background: #f0f0f0;
+        color: var(--dark-color);
+      }
+
+      .modal-button:hover {
+        opacity: 0.9;
+        transform: translateY(-2px);
+      }
+
+      .image-options {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+      }
+
+      .image-option {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+
+      .image-option label {
+        font-weight: 500;
+        color: var(--primary-color);
+      }
+
+      .image-preview {
+        width: 100px;
+        height: 100px;
+        border-radius: 50%;
+        margin: 10px auto;
+        overflow: hidden;
+        border: 3px solid var(--secondary-color);
+      }
+
+      .image-preview img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+
+      .upload-area {
+        border: 2px dashed var(--primary-color);
+        border-radius: 10px;
+        padding: 20px;
+        text-align: center;
+        cursor: pointer;
+        transition: var(--transition);
+        margin-bottom: 15px;
+      }
+
+      .upload-area:hover {
+        background-color: rgba(74, 111, 165, 0.1);
+      }
+
+      .upload-area i {
+        font-size: 40px;
+        color: var(--primary-color);
+        margin-bottom: 10px;
+      }
+
+      .upload-area p {
+        margin-bottom: 5px;
+      }
+
+      .upload-area small {
+        color: #666;
+      }
+
+      #imageUrl {
+        width: 100%;
+        padding: 8px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        margin-top: 5px;
+      }
+
+      @media (max-width: 768px) {
+        .info-group {
+          flex-direction: column;
+        }
+
+        .info-label {
+          width: 100%;
+          margin-bottom: 5px;
+        }
+
+        .profile-card {
+          padding: 20px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <button class="back-button" onclick="window.history.back()">
+      <i class="material-icons">arrow_back</i>
+    </button>
+
+    <div class="container">
+      <div class="profile-header">
+        <div class="profile-avatar" id="avatarContainer">
+          <img
+            id="profileImage"
+            src="https://ui-avatars.com/api/?name=User&background=4A6FA5&color=fff"
+            alt="Profile"
+          />
+          <div class="profile-avatar-edit">Ubah Foto</div>
+        </div>
+        <h1 class="profile-name" id="profileName">Nama Pengguna</h1>
+        <p class="profile-email" id="profileEmail">user@example.com</p>
+      </div>
+
+      <div class="profile-card animate__animated animate__fadeInUp">
+        <h2 class="card-title">
+          <i class="material-icons">person</i> Informasi Pribadi
+        </h2>
+
+        <div class="info-group">
+          <div class="info-label">Nama Lengkap</div>
+          <div class="info-value" id="fullName">-</div>
+        </div>
+
+        <div class="info-group">
+          <div class="info-label">Email</div>
+          <div class="info-value" id="userEmail">-</div>
+        </div>
+
+        <div class="info-group">
+          <div class="info-label">Nomor HP</div>
+          <div class="info-value" id="userPhone">-</div>
+        </div>
+
+        <div class="info-group">
+          <div class="info-label">Alamat</div>
+          <div class="info-value" id="userAddress">-</div>
+        </div>
+
+        <button class="edit-button" id="editProfileBtn">
+          <i class="material-icons">edit</i> Edit Profil
+        </button>
+      </div>
+
+      <div
+        class="profile-card animate__animated animate__fadeInUp"
+        style="animation-delay: 0.2s"
+      >
+        <h2 class="card-title">
+          <i class="material-icons">work</i> Informasi Pekerjaan
+        </h2>
+
+        <div class="info-group">
+          <div class="info-label">ID Karyawan</div>
+          <div class="info-value" id="employeeNumber">-</div>
+        </div>
+
+        <div class="info-group">
+          <div class="info-label">Jabatan</div>
+          <div class="info-value" id="userPosition">-</div>
+        </div>
+
+        <div class="info-group">
+          <div class="info-label">Departemen</div>
+          <div class="info-value" id="userDepartment">-</div>
+        </div>
+
+        <div class="info-group">
+          <div class="info-label">Tanggal Bergabung</div>
+          <div class="info-value" id="joinDate">-</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Photo Edit Modal -->
+    <div class="modal" id="photoModal">
+      <div class="modal-content animate__animated animate__fadeInDown">
+        <h2 class="modal-title">
+          <i class="material-icons">photo_camera</i> Ubah Foto Profil
+        </h2>
+
+        <div class="image-preview">
+          <img id="modalPreview" src="" alt="Preview" />
+        </div>
+
+        <div class="image-options">
+          <div class="image-option">
+            <label for="imageUpload">Unggah Foto Baru</label>
+            <div class="upload-area" id="uploadArea">
+              <i class="material-icons">cloud_upload</i>
+              <p>Seret & Jatuhkan gambar di sini</p>
+              <small>atau klik untuk memilih file</small>
+              <input
+                type="file"
+                id="imageUpload"
+                accept="image/*"
+                style="display: none"
+              />
+            </div>
+          </div>
+
+          <div class="image-option">
+            <label for="imageUrl">Atau masukkan URL gambar</label>
+            <input
+              type="text"
+              id="imageUrl"
+              placeholder="https://example.com/photo.jpg"
+            />
+          </div>
+        </div>
+
+        <div class="modal-actions">
+          <button class="modal-button secondary" id="cancelPhotoBtn">
+            Batal
+          </button>
+          <button class="modal-button primary" id="savePhotoBtn">Simpan</button>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        // Ambil data user dari localStorage
+        let currentUser = JSON.parse(localStorage.getItem("currentUser"));
+        const users = JSON.parse(localStorage.getItem("users")) || [];
+
+        if (!currentUser) {
+          window.location.href = "login.html";
+          return;
+        }
+
+        // Fungsi tampilkan data
+        function displayProfile() {
+          // Selalu ambil data terbaru dari localStorage
+          const freshUsers = JSON.parse(localStorage.getItem("users")) || [];
+          const freshUser =
+            freshUsers.find((u) => u.email === currentUser.email) ||
+            currentUser;
+          currentUser = { ...freshUser };
+          
+          document.getElementById("profileName").textContent =
+            currentUser.fullName || "Pengguna";
+          document.getElementById("profileEmail").textContent =
+            currentUser.email || "-";
+          document.getElementById("fullName").textContent =
+            currentUser.fullName || "-";
+          document.getElementById("userEmail").textContent =
+            currentUser.email || "-";
+          document.getElementById("employeeNumber").textContent =
+            currentUser.employeeNumber || "Belum diatur";
+
+          // Update foto profil
+          if (currentUser.profilePhoto) {
+            // Jika ada foto yang diupload/disimpan
+            document.getElementById("profileImage").src =
+              currentUser.profilePhoto;
+            document.getElementById("modalPreview").src =
+              currentUser.profilePhoto;
+          } else {
+            // Gunakan avatar berdasarkan nama jika tidak ada foto
+            const nameForAvatar = currentUser.fullName
+              ? currentUser.fullName.replace(/ /g, "+")
+              : "User";
+            const avatarUrl = `https://ui-avatars.com/api/?name=${nameForAvatar}&background=4A6FA5&color=fff`;
+            document.getElementById("profileImage").src = avatarUrl;
+            document.getElementById("modalPreview").src = avatarUrl;
+          }
+
+          // Data tambahan
+          if (currentUser.phone)
+            document.getElementById("userPhone").textContent =
+              currentUser.phone;
+          if (currentUser.address)
+            document.getElementById("userAddress").textContent =
+              currentUser.address;
+          if (currentUser.position)
+            document.getElementById("userPosition").textContent =
+              currentUser.position;
+          if (currentUser.department)
+            document.getElementById("userDepartment").textContent =
+              currentUser.department;
+          if (currentUser.joinDate)
+            document.getElementById("joinDate").textContent =
+              currentUser.joinDate;
+        }
+
+        displayProfile();
+
+        // Fungsi toggle mode edit
+        function toggleEditMode() {
+          const infoGroups = document.querySelectorAll(".info-group");
+
+          infoGroups.forEach((group) => {
+            const valueElement = group.querySelector(".info-value");
+            if (valueElement && valueElement.id !== "employeeNumber") {
+              // Nomor karyawan tidak bisa diubah
+              const fieldName = valueElement.id
+                .replace("user", "")
+                .toLowerCase();
+              const currentValue = currentUser[fieldName] || "";
+
+              if (valueElement.querySelector("input")) {
+                // Simpan perubahan dan keluar dari mode edit
+                const newValue = valueElement.querySelector("input").value;
+                currentUser[fieldName] = newValue;
+                valueElement.innerHTML = newValue || "-";
+              } else {
+                // Masuk ke mode edit
+                valueElement.innerHTML = `
+                  <input type="text" value="${currentValue}" 
+                         style="width:100%; padding:5px; border:1px solid #ddd; border-radius:4px;">
+                `;
+              }
+            }
+          });
+        }
+
+        // Fungsi simpan perubahan
+        function saveProfile() {
+          // 1. Simpan password asli jika ada
+          const originalUser = users.find(
+            (user) => user.email === currentUser.email
+          );
+          if (originalUser?.password) {
+            currentUser.password = originalUser.password;
+          }
+          // Update data di array users
+          const updatedUsers = users.map((user) => {
+            if (user.email === currentUser.email) {
+              return {
+                ...user, // Pertahankan semua properti yang ada
+                ...currentUser, // Update dengan perubahan baru
+              };
+            }
+            return user;
+          });
+          // Simpan ke localStorage
+          localStorage.setItem("users", JSON.stringify(updatedUsers));
+          localStorage.setItem("currentUser", JSON.stringify(currentUser));
+
+          alert("Profil berhasil diperbarui!");
+          displayProfile();
+        }
+
+        // Handle tombol edit
+        let isEditing = false;
+        const editBtn = document.getElementById("editProfileBtn");
+
+        editBtn.addEventListener("click", function () {
+          if (!isEditing) {
+            // Masuk mode edit
+            toggleEditMode();
+            editBtn.innerHTML =
+              '<i class="material-icons">save</i> Simpan Perubahan';
+            editBtn.style.background = "#4CAF50";
+            isEditing = true;
+          } else {
+            // Simpan perubahan
+            toggleEditMode(); // Keluar dari mode edit
+            saveProfile();
+            editBtn.innerHTML =
+              '<i class="material-icons">edit</i> Edit Profil';
+            editBtn.style.background = "var(--gradient)";
+            isEditing = false;
+          }
+        });
+
+        // Tombol back
+        document
+          .querySelector(".back-button")
+          .addEventListener("click", function () {
+            if (isEditing) {
+              if (confirm("Batalkan perubahan?")) {
+                toggleEditMode();
+                displayProfile();
+                editBtn.innerHTML =
+                  '<i class="material-icons">edit</i> Edit Profil';
+                editBtn.style.background = "var(--gradient)";
+                isEditing = false;
+              }
+            } else {
+              window.location.href = "menu.html";
+              window.history.back();
+            }
+          });
+
+        // Photo editing functionality
+        const photoModal = document.getElementById("photoModal");
+        const avatarContainer = document.getElementById("avatarContainer");
+        const uploadArea = document.getElementById("uploadArea");
+        const imageUpload = document.getElementById("imageUpload");
+        const imageUrl = document.getElementById("imageUrl");
+        const modalPreview = document.getElementById("modalPreview");
+        const cancelPhotoBtn = document.getElementById("cancelPhotoBtn");
+        const savePhotoBtn = document.getElementById("savePhotoBtn");
+
+        // Open modal when avatar is clicked
+        avatarContainer.addEventListener("click", function () {
+          photoModal.style.display = "flex";
+        });
+
+        // Close modal when cancel is clicked
+        cancelPhotoBtn.addEventListener("click", function () {
+          photoModal.style.display = "none";
+          // Reset inputs
+          imageUpload.value = "";
+          imageUrl.value = "";
+        });
+
+        // Handle file upload
+        uploadArea.addEventListener("click", function () {
+          imageUpload.click();
+        });
+
+        imageUpload.addEventListener("change", function (e) {
+          const file = e.target.files[0];
+          if (file) {
+            const reader = new FileReader();
+            reader.onload = function (event) {
+              modalPreview.src = event.target.result;
+              imageUrl.value = ""; // Clear URL field if file is selected
+            };
+            reader.readAsDataURL(file);
+          }
+        });
+
+        // Handle URL input
+        imageUrl.addEventListener("input", function () {
+          if (imageUrl.value) {
+            modalPreview.src = imageUrl.value;
+            imageUpload.value = ""; // Clear file input if URL is entered
+          }
+        });
+
+        // Handle drag and drop
+        uploadArea.addEventListener("dragover", function (e) {
+          e.preventDefault();
+          uploadArea.style.backgroundColor = "rgba(74, 111, 165, 0.2)";
+        });
+
+        uploadArea.addEventListener("dragleave", function () {
+          uploadArea.style.backgroundColor = "";
+        });
+
+        uploadArea.addEventListener("drop", function (e) {
+          e.preventDefault();
+          uploadArea.style.backgroundColor = "";
+
+          const file = e.dataTransfer.files[0];
+          if (file && file.type.match("image.*")) {
+            imageUpload.files = e.dataTransfer.files;
+            const reader = new FileReader();
+            reader.onload = function (event) {
+              modalPreview.src = event.target.result;
+              imageUrl.value = ""; // Clear URL field if file is selected
+            };
+            reader.readAsDataURL(file);
+          }
+        });
+
+        // Save photo
+        savePhotoBtn.addEventListener("click", function () {
+          const newPhoto = modalPreview.src;
+
+          // Validate the image
+          const img = new Image();
+          img.onload = function () {
+            // Image is valid, save it
+            currentUser.profilePhoto = newPhoto;
+            saveProfile();
+            photoModal.style.display = "none";
+            imageUpload.value = "";
+            imageUrl.value = "";
+          };
+          img.onerror = function () {
+            alert("Gambar tidak valid. Silakan coba lagi.");
+          };
+          img.src = newPhoto;
+        });
+      });
+    </script>
+  </body>
+</html>

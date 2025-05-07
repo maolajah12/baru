@@ -1,0 +1,1075 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Histori Absensi</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/icon?family=Material+Icons"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"
+    />
+    <style>
+      :root {
+        --primary-color: #4a6fa5;
+        --secondary-color: #b9dcff;
+        --accent-color: #ff7e5f;
+        --light-color: #f8f9fa;
+        --dark-color: #343a40;
+        --shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        --transition: all 0.3s ease;
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: "Kanit", sans-serif;
+      }
+
+      body {
+        background-color: var(--light-color);
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        color: var(--dark-color);
+      }
+
+      /* Sidebar Modern */
+      .sidebar {
+        height: 100%;
+        width: 280px;
+        position: fixed;
+        z-index: 1000;
+        top: 0;
+        left: -280px;
+        background: linear-gradient(
+          135deg,
+          var(--primary-color) 0%,
+          #6b8cbe 100%
+        );
+        overflow-x: hidden;
+        transition: var(--transition);
+        box-shadow: 2px 0 15px rgba(0, 0, 0, 0.1);
+        display: flex;
+        flex-direction: column;
+      }
+
+      .sidebar.active {
+        left: 0;
+      }
+
+      .sidebar-header {
+        padding: 25px;
+        color: white;
+        background-color: rgba(0, 0, 0, 0.1);
+        text-align: center;
+      }
+
+      .sidebar-header h2 {
+        font-weight: 500;
+        font-size: 1.5rem;
+        margin-bottom: 5px;
+      }
+
+      .sidebar-header p {
+        font-weight: 300;
+        font-size: 0.9rem;
+        opacity: 0.8;
+      }
+
+      .sidebar-menu {
+        padding: 20px 0;
+        flex: 1;
+      }
+
+      .menu-item {
+        display: flex;
+        align-items: center;
+        padding: 15px 25px;
+        color: white;
+        text-decoration: none;
+        transition: var(--transition);
+        position: relative;
+        overflow: hidden;
+      }
+
+      .menu-item:hover {
+        background-color: rgba(255, 255, 255, 0.1);
+      }
+
+      .menu-item i {
+        margin-right: 15px;
+        font-size: 1.2rem;
+        width: 24px;
+        text-align: center;
+      }
+
+      .menu-item span {
+        font-weight: 300;
+      }
+
+      .menu-item::after {
+        content: "";
+        position: absolute;
+        left: 0;
+        top: 0;
+        height: 100%;
+        width: 3px;
+        background-color: var(--accent-color);
+        transform: translateX(-100%);
+        transition: var(--transition);
+      }
+
+      .menu-item:hover::after {
+        transform: translateX(0);
+      }
+
+      /* Overlay */
+      .overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: rgba(0, 0, 0, 0.5);
+        z-index: 999;
+        opacity: 0;
+        visibility: hidden;
+        transition: var(--transition);
+      }
+
+      .overlay.active {
+        opacity: 1;
+        visibility: visible;
+      }
+
+      /* Top Bar Modern */
+      .top-bar {
+        height: 70px;
+        background-color: white;
+        padding: 0 25px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        box-shadow: var(--shadow);
+        position: relative;
+        z-index: 100;
+      }
+
+      .menu-left {
+        display: flex;
+        align-items: center;
+      }
+
+      .menu-icon {
+        color: var(--primary-color);
+        font-size: 1.8rem;
+        cursor: pointer;
+        margin-right: 15px;
+        transition: var(--transition);
+      }
+
+      .menu-icon:hover {
+        transform: scale(1.1);
+      }
+
+      .page-title {
+        color: var(--primary-color);
+        font-size: 1.3rem;
+        font-weight: 500;
+      }
+
+      .user-profile {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background-color: var(--secondary-color);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        overflow: hidden;
+        transition: var(--transition);
+      }
+
+      .user-profile:hover {
+        transform: scale(1.1);
+      }
+
+      .user-profile img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+
+      /* Konten Utama */
+      .content {
+        flex: 1;
+        padding: 30px;
+        background-color: var(--light-color);
+        position: relative;
+      }
+
+      .welcome-message {
+        margin-bottom: 30px;
+      }
+
+      .welcome-message h1 {
+        color: var(--primary-color);
+        font-weight: 500;
+        font-size: 1.8rem;
+        margin-bottom: 10px;
+      }
+
+      .welcome-message p {
+        color: var(--dark-color);
+        opacity: 0.7;
+        font-weight: 300;
+      }
+
+      /* Filter Section */
+      .filter-section {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 15px;
+        margin-bottom: 30px;
+        background-color: white;
+        padding: 20px;
+        border-radius: 15px;
+        box-shadow: var(--shadow);
+      }
+
+      .filter-group {
+        display: flex;
+        flex-direction: column;
+        min-width: 200px;
+        flex: 1;
+      }
+
+      .filter-label {
+        color: var(--primary-color);
+        margin-bottom: 8px;
+        font-weight: 400;
+      }
+
+      .filter-input {
+        padding: 10px 15px;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        font-size: 0.9rem;
+        transition: var(--transition);
+      }
+
+      .filter-input:focus {
+        outline: none;
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 2px rgba(74, 111, 165, 0.2);
+      }
+
+      .filter-button {
+        background: linear-gradient(
+          135deg,
+          var(--primary-color) 0%,
+          #6b8cbe 100%
+        );
+        color: white;
+        border: none;
+        border-radius: 8px;
+        padding: 0 20px;
+        cursor: pointer;
+        font-weight: 500;
+        transition: var(--transition);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .filter-button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(74, 111, 165, 0.3);
+      }
+
+      /* Attendance Table */
+      .attendance-container {
+        background-color: white;
+        border-radius: 15px;
+        box-shadow: var(--shadow);
+        overflow: hidden;
+      }
+
+      .attendance-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 20px;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+      }
+
+      .attendance-title {
+        color: var(--primary-color);
+        font-size: 1.2rem;
+        font-weight: 500;
+      }
+
+      .export-button {
+        background-color: var(--secondary-color);
+        color: var(--primary-color);
+        border: none;
+        border-radius: 8px;
+        padding: 8px 15px;
+        font-size: 0.9rem;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        transition: var(--transition);
+      }
+
+      .export-button:hover {
+        background-color: var(--primary-color);
+        color: white;
+      }
+
+      .attendance-table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+
+      .attendance-table thead th {
+        background-color: var(--secondary-color);
+        color: var(--primary-color);
+        padding: 15px;
+        text-align: left;
+        font-weight: 500;
+      }
+
+      .attendance-table tbody tr {
+        border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        transition: var(--transition);
+      }
+
+      .attendance-table tbody tr:last-child {
+        border-bottom: none;
+      }
+
+      .attendance-table tbody tr:hover {
+        background-color: rgba(185, 220, 255, 0.1);
+      }
+
+      .attendance-table td {
+        padding: 15px;
+        color: var(--dark-color);
+      }
+
+      .status-badge {
+        display: inline-block;
+        padding: 5px 10px;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 500;
+      }
+
+      .status-present {
+        background-color: #e3f9e5;
+        color: #1b7052;
+      }
+
+      .status-late {
+        background-color: #fff4e5;
+        color: #ff9500;
+      }
+
+      .status-absent {
+        background-color: #ffe5e5;
+        color: #ff3b30;
+      }
+
+      .status-leave {
+        background-color: #e5f1ff;
+        color: #007aff;
+      }
+
+      /* No Data Message */
+      .no-data-message {
+        text-align: center;
+        padding: 40px;
+        color: var(--dark-color);
+        opacity: 0.7;
+        display: none;
+      }
+
+      .no-data-message i {
+        font-size: 50px;
+        color: var(--secondary-color);
+        margin-bottom: 15px;
+      }
+
+      .no-data-message p {
+        font-size: 1.1rem;
+        margin-top: 10px;
+      }
+
+      /* Pagination */
+      .pagination {
+        display: flex;
+        justify-content: center;
+        padding: 20px;
+        gap: 10px;
+      }
+
+      .pagination-button {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: var(--transition);
+        border: 1px solid #ddd;
+        background-color: white;
+        color: var(--dark-color);
+      }
+
+      .pagination-button:hover {
+        background-color: var(--secondary-color);
+        color: var(--primary-color);
+        border-color: var(--secondary-color);
+      }
+
+      .pagination-button.active {
+        background-color: var(--primary-color);
+        color: white;
+        border-color: var(--primary-color);
+      }
+
+      /* Photo Preview Modal */
+      .photo-modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.8);
+        z-index: 1001;
+        justify-content: center;
+        align-items: center;
+      }
+
+      .photo-modal-content {
+        max-width: 90%;
+        max-height: 90%;
+      }
+
+      .photo-modal-content img {
+        max-width: 100%;
+        max-height: 90vh;
+        border-radius: 8px;
+      }
+
+      .close-photo-modal {
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        color: white;
+        font-size: 30px;
+        cursor: pointer;
+      }
+
+      /* View Button */
+      .view-photo-btn {
+        background-color: var(--secondary-color);
+        color: var(--primary-color);
+        border: none;
+        border-radius: 4px;
+        padding: 5px 10px;
+        font-size: 0.8rem;
+        cursor: pointer;
+        transition: var(--transition);
+      }
+
+      .view-photo-btn:hover {
+        background-color: var(--primary-color);
+        color: white;
+      }
+
+      /* Responsive Design */
+      @media (max-width: 768px) {
+        .sidebar {
+          width: 250px;
+          left: -250px;
+        }
+
+        .filter-section {
+          flex-direction: column;
+        }
+
+        .filter-group {
+          width: 100%;
+        }
+
+        .attendance-table thead {
+          display: none;
+        }
+
+        .attendance-table tbody tr {
+          display: block;
+          margin-bottom: 15px;
+          border-radius: 10px;
+          box-shadow: var(--shadow);
+        }
+
+        .attendance-table td {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          padding: 10px 15px;
+          border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .attendance-table td::before {
+          content: attr(data-label);
+          font-weight: 500;
+          color: var(--primary-color);
+          margin-right: 15px;
+        }
+
+        .top-bar {
+          padding: 0 15px;
+          height: 60px;
+        }
+
+        .content {
+          padding: 20px 15px;
+        }
+      }
+
+      /* Animations */
+      @keyframes fadeInUp {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .animate-element {
+        animation: fadeInUp 0.5s ease forwards;
+        opacity: 0;
+      }
+
+      .delay-1 {
+        animation-delay: 0.1s;
+      }
+      .delay-2 {
+        animation-delay: 0.2s;
+      }
+      .delay-3 {
+        animation-delay: 0.3s;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Overlay -->
+    <div class="overlay" id="overlay"></div>
+
+    <!-- Sidebar/Navigasi -->
+    <div class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <h2>Absensi Karyawan</h2>
+        <p>Menu Navigasi</p>
+      </div>
+      <div class="sidebar-menu">
+        <a href="menu.html" class="menu-item">
+          <i class="material-icons">home</i>
+          <span>Beranda</span>
+        </a>
+        <a href="profile.html" class="menu-item">
+          <i class="material-icons">person</i>
+          <span>Profil Saya</span>
+        </a>
+        <a href="histori.html" class="menu-item" id="historyMenuItem">
+          <i class="material-icons">history</i>
+          <span>Histori Absensi</span>
+        </a>
+        <a href="shift.html" class="menu-item">
+          <i class="material-icons">schedule</i>
+          <span>Shift Kerja</span>
+        </a>
+        <a href="grafik.html" class="menu-item">
+          <i class="material-icons">bar_chart</i>
+          <span>Grafik Absen</span>
+        </a>
+        <a href="#" class="menu-item" id="logoutMenuItem">
+          <i class="material-icons">logout</i>
+          <span>Keluar</span>
+        </a>
+      </div>
+    </div>
+
+    <!-- Top Bar -->
+    <div class="top-bar">
+      <div class="menu-left">
+        <i class="material-icons menu-icon" id="menuButton">menu</i>
+        <span class="page-title">Histori Absensi</span>
+      </div>
+      <div class="user-profile" id="userProfile">
+        <img
+          src="https://ui-avatars.com/api/?name=Karyawan&background=4A6FA5&color=fff"
+          alt="Profile"
+        />
+      </div>
+    </div>
+
+    <!-- Konten Utama -->
+    <div class="content">
+      <div class="welcome-message animate__animated animate__fadeIn">
+        <h1 id="welcomeTitle">Histori Absensi</h1>
+        <p id="welcomeSubtitle">Riwayat kehadiran dan presensi Anda</p>
+      </div>
+
+      <!-- Filter Section -->
+      <div class="filter-section animate-element delay-1">
+        <div class="filter-group">
+          <label for="dateFrom" class="filter-label">Dari Tanggal</label>
+          <input type="date" id="dateFrom" class="filter-input" />
+        </div>
+        <div class="filter-group">
+          <label for="dateTo" class="filter-label">Sampai Tanggal</label>
+          <input type="date" id="dateTo" class="filter-input" />
+        </div>
+        <div class="filter-group">
+          <label for="statusFilter" class="filter-label">Status</label>
+          <select id="statusFilter" class="filter-input">
+            <option value="all">Semua Status</option>
+            <option value="present">Hadir</option>
+            <option value="late">Terlambat</option>
+            <option value="absent">Tidak Hadir</option>
+            <option value="leave">Izin/Cuti</option>
+          </select>
+        </div>
+        <button class="filter-button" id="filterButton">
+          <i class="material-icons">search</i>
+          <span>Cari</span>
+        </button>
+      </div>
+
+      <!-- Attendance Table -->
+      <div class="attendance-container animate-element delay-2">
+        <div class="attendance-header">
+          <h3 class="attendance-title">Riwayat Absensi</h3>
+          <button class="export-button" id="exportButton">
+            <i class="material-icons">download</i>
+            <span>Export</span>
+          </button>
+        </div>
+
+        <table class="attendance-table" id="attendanceTable">
+          <thead>
+            <tr>
+              <th>Tanggal/Waktu</th>
+              <th>Status</th>
+              <th>Lokasi</th>
+              <th>Foto</th>
+              <th>Keterangan</th>
+            </tr>
+          </thead>
+          <tbody id="attendanceTableBody">
+            <!-- Data will be inserted here by JavaScript -->
+          </tbody>
+        </table>
+
+        <div class="no-data-message" id="noDataMessage">
+          <i class="material-icons">info</i>
+          <p>Belum ada data absensi yang tercatat</p>
+        </div>
+
+        <div class="pagination" id="pagination">
+          <!-- Pagination will be inserted here by JavaScript -->
+        </div>
+      </div>
+    </div>
+
+    <!-- Photo Preview Modal -->
+    <div class="photo-modal" id="photoModal">
+      <span class="close-photo-modal material-icons" id="closePhotoModal"
+        >close</span
+      >
+      <div class="photo-modal-content">
+        <img id="modalPhoto" src="" alt="Foto Absensi" />
+      </div>
+    </div>
+
+    <!-- Bottom Bar -->
+    <div class="bottom-bar">
+      <p>© 2023 Sistem Absensi Karyawan</p>
+    </div>
+
+    <script>
+              // Konfigurasi pagination
+              const itemsPerPage = 5;
+              let currentPage = 1;
+              let filteredData = [];
+
+              // Fungsi untuk menampilkan data user yang login
+              function displayUserProfile() {
+                  const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+
+                  if (currentUser) {
+                      // Update welcome message with full name
+                      document.getElementById('welcomeTitle').textContent = `Histori Absensi ${currentUser.fullName || ''}`;
+                      document.getElementById('welcomeSubtitle').textContent = `Periode ${new Date().toLocaleDateString('id-ID', { month: 'long', year: 'numeric' })}`;
+
+                      // Update profile picture using full name
+                      const nameForAvatar = currentUser.fullName ? currentUser.fullName.split(' ').slice(0, 2).join(' ') : 'Karyawan';
+                      document.getElementById('userProfile').innerHTML = `
+                          <img src="https://ui-avatars.com/api/?name=${encodeURIComponent(nameForAvatar)}&background=4A6FA5&color=fff" alt="Profile">
+                      `;
+                  }
+              }
+
+              // Fungsi untuk logout
+              function setupLogout() {
+                  document.getElementById('logoutMenuItem').addEventListener('click', function(e) {
+                      e.preventDefault();
+                      localStorage.removeItem('currentUser');
+                      window.location.href = 'login.html';
+                  });
+              }
+
+              // Fungsi untuk sidebar
+              function setupSidebar() {
+                  const menuButton = document.getElementById('menuButton');
+                  const sidebar = document.getElementById('sidebar');
+                  const overlay = document.getElementById('overlay');
+
+                  menuButton.addEventListener('click', function() {
+                      sidebar.classList.toggle('active');
+                      overlay.classList.toggle('active');
+                  });
+
+                  overlay.addEventListener('click', function() {
+                      sidebar.classList.remove('active');
+                      overlay.classList.remove('active');
+                  });
+              }
+
+      // Fungsi untuk memuat data absensi
+      function loadAttendanceData() {
+          const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+          if (!currentUser) return;
+
+          const attendanceHistory = JSON.parse(localStorage.getItem('attendanceHistory')) || [];
+
+          // Filter data berdasarkan userId
+          const userAttendance = attendanceHistory.filter(record => record.userId === currentUser.email);
+
+          // Lanjutkan dengan menampilkan data yang sudah difilter
+          filterData(userAttendance);
+          displayAttendanceData();
+      }
+
+      // Fungsi untuk menampilkan data absensi
+      function displayAttendanceData() {
+          const tableBody = document.getElementById('attendanceTableBody');
+          const noDataMessage = document.getElementById('noDataMessage');
+          const attendanceTable = document.querySelector('.attendance-table');
+
+          if (filteredData.length === 0) {
+                      noDataMessage.style.display = 'block';
+                      attendanceTable.style.display = 'none';
+                      document.getElementById('pagination').style.display = 'none';
+                      return;
+                  }
+
+                  // Hide no data message and show table
+                  noDataMessage.style.display = 'none';
+                  attendanceTable.style.display = 'table';
+                  document.getElementById('pagination').style.display = 'flex';
+
+                  // Clear existing rows
+                  tableBody.innerHTML = '';
+
+                  // Hitung item untuk halaman saat ini
+                  const startIndex = (currentPage - 1) * itemsPerPage;
+                  const endIndex = startIndex + itemsPerPage;
+                  const paginatedData = filteredData.slice(startIndex, endIndex);
+
+                  // Add rows for each attendance record
+                  paginatedData.forEach(record => {
+                      const row = document.createElement('tr');
+
+                      // Format date
+                      const dateCell = document.createElement('td');
+                      dateCell.textContent = record.dateTime;
+                      dateCell.setAttribute('data-label', 'Tanggal/Waktu');
+
+                      // Format status with badge
+                      const statusCell = document.createElement('td');
+                      statusCell.setAttribute('data-label', 'Status');
+                      const statusBadge = document.createElement('span');
+
+                      let statusText = '';
+                      let statusClass = '';
+
+                      switch(record.status) {
+                          case 'present':
+                              statusText = 'Hadir';
+                              statusClass = 'status-present';
+                              break;
+                          case 'late':
+                              statusText = 'Terlambat';
+                              statusClass = 'status-late';
+                              break;
+                          case 'leave':
+                              statusText = 'Izin/Cuti';
+                              statusClass = 'status-leave';
+                              break;
+                          case 'sick':
+                              statusText = 'Sakit';
+                              statusClass = 'status-absent';
+                              break;
+                          default:
+                              statusText = 'Hadir';
+                              statusClass = 'status-present';
+                      }
+
+                      statusBadge.className = `status-badge ${statusClass}`;
+                      statusBadge.textContent = statusText;
+                      statusCell.appendChild(statusBadge);
+
+                      // Location
+                      const locationCell = document.createElement('td');
+                      locationCell.textContent = record.location || '-';
+                      locationCell.setAttribute('data-label', 'Lokasi');
+
+                      // Photo
+                      const photoCell = document.createElement('td');
+                      photoCell.setAttribute('data-label', 'Foto');
+                      if (record.photo) {
+                          const viewButton = document.createElement('button');
+                          viewButton.className = 'view-photo-btn';
+                          viewButton.innerHTML = '<i class="material-icons">photo_camera</i> Lihat';
+                          viewButton.addEventListener('click', () => showPhotoModal(record.photo));
+                          photoCell.appendChild(viewButton);
+                      } else {
+                          photoCell.textContent = '-';
+                      }
+
+                      // Note
+                      const noteCell = document.createElement('td');
+                      noteCell.textContent = record.note || '-';
+                      noteCell.setAttribute('data-label', 'Keterangan');
+
+                      // Add cells to row
+                      row.appendChild(dateCell);
+                      row.appendChild(statusCell);
+                      row.appendChild(locationCell);
+                      row.appendChild(photoCell);
+                      row.appendChild(noteCell);
+
+                      // Add row to table
+                      tableBody.appendChild(row);
+                  });
+
+                  // Update pagination
+                  updatePagination(filteredData.length);
+              }
+
+              // Fungsi untuk filter data
+              function filterData(data) {
+                  const dateFrom = document.getElementById('dateFrom').value;
+                  const dateTo = document.getElementById('dateTo').value;
+                  const status = document.getElementById('statusFilter').value;
+
+                  filteredData = data.filter(record => {
+                      // Filter berdasarkan tanggal
+                      const recordDate = new Date(record.id); // Menggunakan timestamp ID sebagai tanggal
+                      const fromDate = dateFrom ? new Date(dateFrom) : null;
+                      const toDate = dateTo ? new Date(dateTo + 'T23:59:59') : null;
+
+                      // Filter berdasarkan status
+                      const statusMatch = status === 'all' || record.status === status;
+
+                      // Filter berdasarkan tanggal
+                      let dateMatch = true;
+                      if (fromDate && recordDate < fromDate) {
+                          dateMatch = false;
+                      }
+                      if (toDate && recordDate > toDate) {
+                          dateMatch = false;
+                      }
+
+                      return statusMatch && dateMatch;
+                  });
+
+                  // Reset ke halaman 1 setelah filter
+                  currentPage = 1;
+              }
+
+              // Fungsi untuk update pagination
+              function updatePagination(totalItems) {
+                  const paginationDiv = document.getElementById('pagination');
+                  paginationDiv.innerHTML = '';
+
+                  const totalPages = Math.ceil(totalItems / itemsPerPage);
+
+                  // Previous button
+                  const prevButton = document.createElement('div');
+                  prevButton.className = `pagination-button ${currentPage === 1 ? 'disabled' : ''}`;
+                  prevButton.innerHTML = '<i class="material-icons">chevron_left</i>';
+                  prevButton.addEventListener('click', () => {
+                      if (currentPage > 1) {
+                          currentPage--;
+                          loadAttendanceData();
+                      }
+                  });
+                  paginationDiv.appendChild(prevButton);
+
+                  // Page buttons
+                  const maxVisiblePages = 5;
+                  let startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2));
+                  let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
+
+                  if (endPage - startPage + 1 < maxVisiblePages) {
+                      startPage = Math.max(1, endPage - maxVisiblePages + 1);
+                  }
+
+                  for (let i = startPage; i <= endPage; i++) {
+                      const pageButton = document.createElement('div');
+                      pageButton.className = `pagination-button ${i === currentPage ? 'active' : ''}`;
+                      pageButton.textContent = i;
+                      pageButton.addEventListener('click', () => {
+                          currentPage = i;
+                          loadAttendanceData();
+                      });
+                      paginationDiv.appendChild(pageButton);
+                  }
+
+                  // Next button
+                  const nextButton = document.createElement('div');
+                  nextButton.className = `pagination-button ${currentPage === totalPages ? 'disabled' : ''}`;
+                  nextButton.innerHTML = '<i class="material-icons">chevron_right</i>';
+                  nextButton.addEventListener('click', () => {
+                      if (currentPage < totalPages) {
+                          currentPage++;
+                          loadAttendanceData();
+                      }
+                  });
+                  paginationDiv.appendChild(nextButton);
+              }
+
+              // Fungsi untuk menampilkan modal foto
+              function showPhotoModal(photoSrc) {
+                  const modal = document.getElementById('photoModal');
+                  const modalImg = document.getElementById('modalPhoto');
+
+                  modalImg.src = photoSrc;
+                  modal.style.display = 'flex';
+
+                  // Close modal when clicking X
+                  document.getElementById('closePhotoModal').addEventListener('click', () => {
+                      modal.style.display = 'none';
+                  });
+
+                  // Close modal when clicking outside
+                  modal.addEventListener('click', (e) => {
+                      if (e.target === modal) {
+                          modal.style.display = 'none';
+                      }
+                  });
+              }
+
+              // Fungsi untuk export data
+              function setupExportButton() {
+                  document.getElementById('exportButton').addEventListener('click', function() {
+                      if (filteredData.length === 0) {
+                          alert('Tidak ada data untuk diexport');
+                          return;
+                      }
+
+                      // Convert to CSV
+                      let csv = 'Tanggal/Waktu,Status,Lokasi,Keterangan\n';
+
+                      filteredData.forEach(record => {
+                          let statusText = '';
+
+                          switch(record.status) {
+                              case 'present': statusText = 'Hadir'; break;
+                              case 'late': statusText = 'Terlambat'; break;
+                              case 'leave': statusText = 'Izin/Cuti'; break;
+                              case 'sick': statusText = 'Sakit'; break;
+                              default: statusText = 'Hadir';
+                          }
+
+                          csv += `"${record.dateTime}","${statusText}","${record.location || ''}","${record.note || ''}"\n`;
+                      });
+
+                      // Create download link
+                      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+                      const url = URL.createObjectURL(blob);
+                      const link = document.createElement('a');
+                      link.setAttribute('href', url);
+                      link.setAttribute('download', `absensi_${new Date().toISOString().slice(0,10)}.csv`);
+                      link.style.visibility = 'hidden';
+                      document.body.appendChild(link);
+                      link.click();
+                      document.body.removeChild(link);
+                  });
+              }
+
+              // Fungsi untuk setup filter button
+              function setupFilterButton() {
+                  document.getElementById('filterButton').addEventListener('click', function() {
+                      loadAttendanceData();
+                  });
+              }
+
+              // Inisialisasi saat halaman dimuat
+              window.addEventListener('load', function() {
+                  // Cek apakah user sudah login
+                  const currentUser = localStorage.getItem('currentUser');
+                  if (!currentUser) {
+                      window.location.href = 'login.html';
+                      return;
+                  }
+
+                  // Setup semua komponen
+                  displayUserProfile();
+                  setupSidebar();
+                  setupLogout();
+                  setupExportButton();
+                  setupFilterButton();
+
+                  // Set tanggal default (30 hari terakhir)
+                  const today = new Date();
+                  const lastMonth = new Date();
+                  lastMonth.setDate(today.getDate() - 30);
+
+                  document.getElementById('dateFrom').valueAsDate = lastMonth;
+                  document.getElementById('dateTo').valueAsDate = today;
+
+                  // Load data absensi
+                  loadAttendanceData();
+
+                  // Animasi untuk elemen yang muncul
+                  const animatedElements = document.querySelectorAll('.animate-element');
+                  animatedElements.forEach((el, index) => {
+                      el.style.animationDelay = `${index * 0.1}s`;
+                  });
+              });
+    </script>
+  </body>
+</html>

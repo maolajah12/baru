@@ -1,0 +1,1076 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Menu Absensi Karyawan</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/icon?family=Material+Icons"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"
+    />
+    <style>
+      :root {
+        --primary-color: #4a6fa5;
+        --secondary-color: #b9dcff;
+        --accent-color: #ff7e5f;
+        --light-color: #f8f9fa;
+        --dark-color: #343a40;
+        --shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        --transition: all 0.3s ease;
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: "Kanit", sans-serif;
+      }
+
+      body {
+        background-color: var(--light-color);
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        color: var(--dark-color);
+      }
+
+      /* Sidebar Modern */
+      .sidebar {
+        height: 100%;
+        width: 280px;
+        position: fixed;
+        z-index: 1000;
+        top: 0;
+        left: -280px;
+        background: linear-gradient(
+          135deg,
+          var(--primary-color) 0%,
+          #6b8cbe 100%
+        );
+        overflow-x: hidden;
+        transition: var(--transition);
+        box-shadow: 2px 0 15px rgba(0, 0, 0, 0.1);
+        display: flex;
+        flex-direction: column;
+      }
+
+      .sidebar.active {
+        left: 0;
+      }
+
+      .sidebar-header {
+        padding: 25px;
+        color: white;
+        background-color: rgba(0, 0, 0, 0.1);
+        text-align: center;
+      }
+
+      .sidebar-header h2 {
+        font-weight: 500;
+        font-size: 1.5rem;
+        margin-bottom: 5px;
+      }
+
+      .sidebar-header p {
+        font-weight: 300;
+        font-size: 0.9rem;
+        opacity: 0.8;
+      }
+
+      .sidebar-menu {
+        padding: 20px 0;
+        flex: 1;
+      }
+
+      .menu-item {
+        display: flex;
+        align-items: center;
+        padding: 15px 25px;
+        color: white;
+        text-decoration: none;
+        transition: var(--transition);
+        position: relative;
+        overflow: hidden;
+      }
+
+      .menu-item:hover {
+        background-color: rgba(255, 255, 255, 0.1);
+      }
+
+      .menu-item i {
+        margin-right: 15px;
+        font-size: 1.2rem;
+        width: 24px;
+        text-align: center;
+      }
+
+      .menu-item span {
+        font-weight: 300;
+      }
+
+      .menu-item::after {
+        content: "";
+        position: absolute;
+        left: 0;
+        top: 0;
+        height: 100%;
+        width: 3px;
+        background-color: var(--accent-color);
+        transform: translateX(-100%);
+        transition: var(--transition);
+      }
+
+      .menu-item:hover::after {
+        transform: translateX(0);
+      }
+
+      /* Overlay */
+      .overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: rgba(0, 0, 0, 0.5);
+        z-index: 999;
+        opacity: 0;
+        visibility: hidden;
+        transition: var(--transition);
+      }
+
+      .overlay.active {
+        opacity: 1;
+        visibility: visible;
+      }
+
+      /* Top Bar Modern */
+      .top-bar {
+        height: 70px;
+        background-color: white;
+        padding: 0 25px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        box-shadow: var(--shadow);
+        position: relative;
+        z-index: 100;
+      }
+
+      .menu-left {
+        display: flex;
+        align-items: center;
+      }
+
+      .menu-icon {
+        color: var(--primary-color);
+        font-size: 1.8rem;
+        cursor: pointer;
+        margin-right: 15px;
+        transition: var(--transition);
+      }
+
+      .menu-icon:hover {
+        transform: scale(1.1);
+      }
+
+      .page-title {
+        color: var(--primary-color);
+        font-size: 1.3rem;
+        font-weight: 500;
+      }
+
+      .user-profile {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background-color: var(--secondary-color);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        overflow: hidden;
+        transition: var(--transition);
+      }
+
+      .user-profile:hover {
+        transform: scale(1.1);
+      }
+
+      .user-profile img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+
+      /* Konten Utama */
+      .content {
+        flex: 1;
+        padding: 30px;
+        background-color: var(--light-color);
+        position: relative;
+      }
+
+      .welcome-message {
+        margin-bottom: 30px;
+      }
+
+      .welcome-message h1 {
+        color: var(--primary-color);
+        font-weight: 500;
+        font-size: 1.8rem;
+        margin-bottom: 10px;
+      }
+
+      .welcome-message p {
+        color: var(--dark-color);
+        opacity: 0.7;
+        font-weight: 300;
+      }
+
+      /* Grid Menu Modern */
+      .menu-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        gap: 25px;
+        margin-top: 20px;
+      }
+
+      .menu-item-card {
+        background-color: white;
+        border-radius: 15px;
+        box-shadow: var(--shadow);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 25px 15px;
+        cursor: pointer;
+        transition: var(--transition);
+        position: relative;
+        overflow: hidden;
+        border: none;
+      }
+
+      .menu-item-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+      }
+
+      .menu-item-card::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 5px;
+        background: linear-gradient(
+          90deg,
+          var(--primary-color),
+          var(--accent-color)
+        );
+      }
+
+      .menu-item-icon {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        background-color: var(--secondary-color);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 20px;
+      }
+
+      .menu-item-icon img {
+        width: 50px;
+        height: 50px;
+        object-fit: contain;
+      }
+
+      .menu-item-label {
+        color: var(--primary-color);
+        font-size: 1.2rem;
+        font-weight: 500;
+        margin-top: 10px;
+        text-align: center;
+      }
+
+      .menu-item-desc {
+        color: var(--dark-color);
+        opacity: 0.7;
+        font-size: 0.9rem;
+        text-align: center;
+        margin-top: 5px;
+        font-weight: 300;
+      }
+
+      /* Floating Button Modern */
+      .floating-button {
+        position: fixed;
+        bottom: 30px;
+        right: 30px;
+        z-index: 10;
+      }
+
+      .floating-button button {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        background: linear-gradient(
+          135deg,
+          var(--primary-color) 0%,
+          var(--accent-color) 100%
+        );
+        border: none;
+        color: white;
+        font-size: 1.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        transition: var(--transition);
+      }
+
+      .floating-button button:hover {
+        transform: scale(1.1) rotate(90deg);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+      }
+
+      /* Bottom Bar Modern */
+      .bottom-bar {
+        height: 60px;
+        background-color: white;
+        box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+
+      .bottom-bar p {
+        color: var(--dark-color);
+        opacity: 0.6;
+        font-size: 0.8rem;
+        font-weight: 300;
+      }
+
+      /* Responsive Design */
+      @media (max-width: 768px) {
+        .sidebar {
+          width: 250px;
+          left: -250px;
+        }
+
+        .menu-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .welcome-message h1 {
+          font-size: 1.5rem;
+        }
+
+        .top-bar {
+          padding: 0 15px;
+          height: 60px;
+        }
+
+        .content {
+          padding: 20px 15px;
+        }
+      }
+
+      @media (min-width: 992px) {
+        .menu-grid {
+          grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        }
+      }
+
+      /* Animations */
+      @keyframes fadeInUp {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .animate-card {
+        animation: fadeInUp 0.5s ease forwards;
+        opacity: 0;
+      }
+
+      .delay-1 {
+        animation-delay: 0.1s;
+      }
+      .delay-2 {
+        animation-delay: 0.2s;
+      }
+      .delay-3 {
+        animation-delay: 0.3s;
+      }
+
+      /* Popup Form Styles */
+      .popup-form {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%) scale(0.9);
+        width: 90%;
+        max-width: 450px; /* Diubah dari 500px ke 450px */
+        max-height: 90vh; /* Tambahkan batas tinggi maksimum */
+        overflow-y: auto; /* Tambahkan scroll jika konten terlalu panjang */
+        background-color: white;
+        border-radius: 15px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        z-index: 1001;
+        opacity: 0;
+        visibility: hidden;
+        transition: all 0.3s ease;
+        padding: 20px; /* Diubah dari 25px ke 20px */
+      }
+
+      .popup-form.active {
+        opacity: 1;
+        visibility: visible;
+        transform: translate(-50%, -50%) scale(1);
+      }
+
+      .popup-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 15px; /* Diubah dari 20px ke 15px */
+        padding-bottom: 10px; /* Diubah dari 15px ke 10px */
+        border-bottom: 1px solid #eee;
+      }
+
+      .popup-title {
+        color: var(--primary-color);
+        font-size: 1.3rem;
+        font-weight: 500;
+      }
+
+      .close-popup {
+        background: none;
+        border: none;
+        font-size: 1.5rem;
+        color: #999;
+        cursor: pointer;
+        transition: var(--transition);
+      }
+
+      .close-popup:hover {
+        color: var(--accent-color);
+      }
+
+      .form-group {
+        margin-bottom: 15px; /* Diubah dari 20px ke 15px */
+      }
+
+      .form-label {
+        display: block;
+        margin-bottom: 8px;
+        color: var(--primary-color);
+        font-weight: 400;
+      }
+
+      .form-input {
+        width: 100%;
+        padding: 12px 15px;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        font-size: 0.95rem;
+        transition: var(--transition);
+      }
+
+      .form-input:focus {
+        outline: none;
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 2px rgba(74, 111, 165, 0.2);
+      }
+
+      .form-textarea {
+        min-height: 100px;
+        resize: vertical;
+      }
+
+      .webcam-container {
+        width: 100%;
+        height: 180px; /* Diubah dari 200px ke 180px */
+        background-color: #f5f5f5;
+        border-radius: 8px;
+        margin-bottom: 15px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+        overflow: hidden;
+      }
+
+      #webcam {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+
+      #captureBtn {
+        position: absolute;
+        bottom: 10px;
+        left: 50%;
+        transform: translateX(-50%);
+        background-color: var(--accent-color);
+        color: white;
+        border: none;
+        border-radius: 50%;
+        width: 40px; /* Diubah dari 50px ke 40px */
+        height: 40px; /* Diubah dari 50px ke 40px */
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+      }
+
+      #captureBtn i {
+        font-size: 1.5rem;
+      }
+
+      #photoPreview {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: none;
+      }
+
+      .submit-btn {
+        background: linear-gradient(
+          135deg,
+          var(--primary-color) 0%,
+          var(--accent-color) 100%
+        );
+        color: white;
+        border: none;
+        border-radius: 8px;
+        padding: 12px 20px;
+        font-size: 1rem;
+        font-weight: 500;
+        width: 100%;
+        cursor: pointer;
+        transition: var(--transition);
+      }
+
+      .submit-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+      }
+
+      .location-info {
+        display: flex;
+        align-items: center;
+        margin-top: 10px;
+        color: #666;
+        font-size: 0.9rem;
+      }
+
+      .location-info i {
+        margin-right: 5px;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Overlay -->
+    <div class="overlay" id="overlay"></div>
+
+    <!-- Sidebar/Navigasi -->
+    <div class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <h2>Absensi Karyawan</h2>
+        <p>Menu Navigasi</p>
+      </div>
+      <div class="sidebar-menu">
+        <a
+          href="profile.html?name=${currentUser.fullName}"
+          class="menu-item"
+          id="profileMenuItem"
+        >
+          <i class="material-icons">person</i>
+          <span>Profil Saya</span>
+        </a>
+        <a href="histori.html" class="menu-item">
+          <i class="material-icons">history</i>
+          <span>Histori Absensi</span>
+        </a>
+        <a href="shift.html" class="menu-item">
+          <i class="material-icons">schedule</i>
+          <span>Shift Kerja</span>
+        </a>
+        <a href="#" class="menu-item" id="logoutMenuItem">
+          <i class="material-icons">logout</i>
+          <span>Keluar</span>
+        </a>
+      </div>
+    </div>
+
+    <!-- Top Bar -->
+    <div class="top-bar">
+      <div class="menu-left">
+        <i class="material-icons menu-icon" id="menuButton">menu</i>
+        <span class="page-title">Beranda</span>
+      </div>
+      <div class="user-profile" id="userProfile">
+        <img
+          src="https://ui-avatars.com/api/?name=Karyawan&background=4A6FA5&color=fff"
+          alt="Profile"
+        />
+      </div>
+    </div>
+
+    <!-- Konten Utama -->
+    <div class="content">
+      <div class="welcome-message animate__animated animate__fadeIn">
+        <h1 id="welcomeTitle">Selamat Datang</h1>
+        <p id="welcomeSubtitle">Silakan pilih menu di bawah untuk memulai</p>
+      </div>
+
+      <div class="menu-grid" id="menuContainer">
+        <div class="menu-item-card animate-card delay-1">
+          <div class="menu-item-icon">
+            <img
+              src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png"
+              alt="Profil"
+            />
+          </div>
+          <h3 class="menu-item-label">Profil</h3>
+          <p class="menu-item-desc">Lihat dan edit profil Anda</p>
+        </div>
+
+        <div class="menu-item-card animate-card delay-2">
+          <div class="menu-item-icon">
+            <img
+              src="https://cdn-icons-png.flaticon.com/512/3652/3652191.png"
+              alt="Histori"
+            />
+          </div>
+          <h3 class="menu-item-label">Histori</h3>
+          <p class="menu-item-desc">Riwayat absensi Anda</p>
+        </div>
+
+        <div class="menu-item-card animate-card delay-3">
+          <div class="menu-item-icon">
+            <img
+              src="https://cdn-icons-png.flaticon.com/512/3833/3833318.png"
+              alt="Shift Kerja"
+            />
+          </div>
+          <h3 class="menu-item-label">Shift Kerja</h3>
+          <p class="menu-item-desc">Jadwal shift kerja Anda</p>
+        </div>
+
+        <div class="menu-item-card animate-card">
+          <div class="menu-item-icon">
+            <img
+              src="https://cdn-icons-png.flaticon.com/512/1570/1570887.png"
+              alt="Laporan"
+            />
+          </div>
+          <h3 class="menu-item-label">Grafik</h3>
+          <p class="menu-item-desc">Grafik Absen</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Floating Button -->
+    <div class="floating-button">
+      <button id="floatingBtn">
+        <i class="material-icons">add</i>
+      </button>
+    </div>
+
+    <!-- Bottom Bar -->
+    <div class="bottom-bar">
+      <p>© 2025 Sistem Absensi Karyawan</p>
+    </div>
+
+    <!-- Popup Form for Attendance -->
+    <div class="popup-form" id="attendancePopup">
+      <div class="popup-header">
+        <h3 class="popup-title">Absensi Hari Ini</h3>
+        <button class="close-popup" id="closePopup">&times;</button>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Foto Wajah</label>
+        <div class="webcam-container">
+          <video id="webcam" autoplay playsinline></video>
+          <canvas id="canvas" style="display: none"></canvas>
+          <img id="photoPreview" alt="Foto Preview" />
+          <button id="captureBtn">
+            <i class="material-icons">camera_alt</i>
+          </button>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Waktu dan Tanggal</label>
+        <input type="text" class="form-input" id="attendanceTime" readonly />
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Lokasi Terkini</label>
+        <input
+          type="text"
+          class="form-input"
+          id="attendanceLocation"
+          readonly
+        />
+        <div class="location-info">
+          <i class="material-icons">location_on</i>
+          <span id="locationStatus">Mendeteksi lokasi...</span>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Status</label>
+        <select class="form-input" id="attendanceStatus">
+          <option value="present">Hadir</option>
+          <option value="late">Terlambat</option>
+          <option value="leave">Izin/Cuti</option>
+          <option value="sick">Sakit</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Keterangan (Opsional)</label>
+        <textarea
+          class="form-input form-textarea"
+          id="attendanceNote"
+          placeholder="Tambahkan keterangan jika diperlukan"
+        ></textarea>
+      </div>
+
+      <button class="submit-btn" id="submitAttendance">Simpan Absensi</button>
+    </div>
+
+    <script>
+      // Fungsi untuk menampilkan data user yang login
+      function displayUserProfile() {
+        const currentUser = JSON.parse(localStorage.getItem("currentUser"));
+
+        if (currentUser) {
+          // Update welcome message with full name
+          document.getElementById(
+            "welcomeTitle"
+          ).textContent = `Selamat Datang, ${
+            currentUser.fullName || "Pengguna"
+          }`;
+          document.getElementById(
+            "welcomeSubtitle"
+          ).textContent = `Anda login sebagai ${currentUser.email}`;
+
+          // Update profile picture using full name
+          const nameForAvatar = currentUser.fullName
+            ? currentUser.fullName.split(" ").slice(0, 2).join(" ")
+            : "Karyawan";
+          document.getElementById("userProfile").innerHTML = `
+                    <img src="https://ui-avatars.com/api/?name=${encodeURIComponent(
+                      nameForAvatar
+                    )}&background=4A6FA5&color=fff" alt="Profile">
+                `;
+
+          // Update profile menu link
+          document.getElementById(
+            "profileMenuItem"
+          ).href = `profile.html?name=${encodeURIComponent(
+            currentUser.fullName
+          )}`;
+        }
+      }
+
+      // Fungsi untuk logout
+      function setupLogout() {
+        document
+          .getElementById("logoutMenuItem")
+          .addEventListener("click", function (e) {
+            e.preventDefault();
+            localStorage.removeItem("currentUser");
+            window.location.href = "login.html";
+          });
+      }
+
+      // Fungsi untuk sidebar
+      function setupSidebar() {
+        const menuButton = document.getElementById("menuButton");
+        const sidebar = document.getElementById("sidebar");
+        const overlay = document.getElementById("overlay");
+
+        menuButton.addEventListener("click", function () {
+          sidebar.classList.toggle("active");
+          overlay.classList.toggle("active");
+        });
+
+        overlay.addEventListener("click", function () {
+          sidebar.classList.remove("active");
+          overlay.classList.remove("active");
+        });
+      }
+
+      // Fungsi untuk floating button
+      function setupFloatingButton() {
+        document
+          .getElementById("floatingBtn")
+          .addEventListener("click", function () {
+            const popup = document.getElementById("attendancePopup");
+            const overlay = document.getElementById("overlay");
+
+            popup.classList.add("active");
+            overlay.classList.add("active");
+            startWebcam();
+            updateDateTime();
+            getLocation();
+          });
+      }
+
+      // Fungsi untuk menu cards
+      function setupMenuCards() {
+        const cards = document.querySelectorAll(".menu-item-card");
+        cards.forEach((card) => {
+          card.addEventListener("click", function () {
+            // Animasi saat diklik
+            this.style.transform = "scale(0.95)";
+            setTimeout(() => {
+              this.style.transform = "";
+              const label = this.querySelector(".menu-item-label").textContent;
+
+              // Arahkan ke halaman yang sesuai
+              if (label === "Profil") {
+                const currentUser = JSON.parse(
+                  localStorage.getItem("currentUser")
+                );
+                window.location.href = `profile.html?name=${encodeURIComponent(
+                  currentUser.fullName
+                )}`;
+              } else if (label === "Histori") {
+                window.location.href = "histori.html";
+              } else if (label === "Shift Kerja") {
+                window.location.href = "shift.html";
+                } else if (label === "Grafik") {
+                window.location.href = "grafik.html";
+              } else {
+                alert(`Membuka menu ${label}`);
+              }
+            }, 200);
+          });
+        });
+      }
+
+      // Fungsi untuk setup popup absensi
+      function setupAttendancePopup() {
+        const popup = document.getElementById("attendancePopup");
+        const closePopup = document.getElementById("closePopup");
+        const overlay = document.getElementById("overlay");
+        const captureBtn = document.getElementById("captureBtn");
+        const webcam = document.getElementById("webcam");
+        const canvas = document.getElementById("canvas");
+        const photoPreview = document.getElementById("photoPreview");
+        const submitBtn = document.getElementById("submitAttendance");
+
+        // Close popup
+        closePopup.addEventListener("click", function () {
+          popup.classList.remove("active");
+          overlay.classList.remove("active");
+          stopWebcam();
+        });
+
+        overlay.addEventListener("click", function () {
+          popup.classList.remove("active");
+          overlay.classList.remove("active");
+          stopWebcam();
+        });
+
+        // Capture photo from webcam
+        captureBtn.addEventListener("click", function () {
+          const context = canvas.getContext("2d");
+          canvas.width = webcam.videoWidth;
+          canvas.height = webcam.videoHeight;
+          context.drawImage(webcam, 0, 0, canvas.width, canvas.height);
+
+          // Convert to data URL and display
+          const imageDataUrl = canvas.toDataURL("image/png");
+          photoPreview.src = imageDataUrl;
+          photoPreview.style.display = "block";
+          webcam.style.display = "none";
+        });
+
+        // Submit attendance data
+        submitBtn.addEventListener("click", function () {
+          const currentUser = JSON.parse(localStorage.getItem("currentUser"));
+          const attendanceData = {
+            id: Date.now(),
+            userId: currentUser.id,
+            userName: currentUser.fullName,
+            dateTime: document.getElementById("attendanceTime").value,
+            location: document.getElementById("attendanceLocation").value,
+            status: document.getElementById("attendanceStatus").value,
+            note: document.getElementById("attendanceNote").value,
+            photo:
+              photoPreview.style.display === "block"
+                ? canvas.toDataURL("image/png")
+                : null,
+          };
+
+          // Save to localStorage
+          saveAttendanceData(attendanceData);
+
+          // Close popup
+          popup.classList.remove("active");
+          overlay.classList.remove("active");
+          stopWebcam();
+
+          // Show success message
+          alert("Absensi berhasil disimpan!");
+        });
+      }
+
+      // Fungsi untuk start webcam
+      function startWebcam() {
+        const webcam = document.getElementById("webcam");
+        const photoPreview = document.getElementById("photoPreview");
+
+        // Reset display
+        webcam.style.display = "block";
+        photoPreview.style.display = "none";
+
+        if (navigator.mediaDevices.getUserMedia) {
+          navigator.mediaDevices
+            .getUserMedia({ video: true })
+            .then(function (stream) {
+              webcam.srcObject = stream;
+            })
+            .catch(function (error) {
+              console.error("Error accessing webcam: ", error);
+              alert(
+                "Tidak dapat mengakses webcam. Pastikan Anda memberikan izin."
+              );
+            });
+        }
+      }
+
+      // Fungsi untuk stop webcam
+      function stopWebcam() {
+        const webcam = document.getElementById("webcam");
+        if (webcam.srcObject) {
+          webcam.srcObject.getTracks().forEach((track) => track.stop());
+        }
+      }
+
+      // Fungsi untuk update date and time
+      function updateDateTime() {
+        const now = new Date();
+        const options = {
+          weekday: "long",
+          year: "numeric",
+          month: "long",
+          day: "numeric",
+          hour: "2-digit",
+          minute: "2-digit",
+          second: "2-digit",
+        };
+        document.getElementById("attendanceTime").value =
+          now.toLocaleDateString("id-ID", options);
+      }
+
+      // Fungsi untuk get current location
+      function getLocation() {
+        const locationInput = document.getElementById("attendanceLocation");
+        const locationStatus = document.getElementById("locationStatus");
+
+        if (navigator.geolocation) {
+          locationStatus.textContent = "Mendeteksi lokasi...";
+
+          navigator.geolocation.getCurrentPosition(
+            function (position) {
+              const latitude = position.coords.latitude;
+              const longitude = position.coords.longitude;
+
+              // Use reverse geocoding to get address (simplified for demo)
+              locationInput.value = `${latitude.toFixed(
+                6
+              )}, ${longitude.toFixed(6)}`;
+              locationStatus.textContent = "Lokasi berhasil dideteksi";
+
+              // Simulate getting address (in a real app, call a geocoding API)
+              setTimeout(() => {
+                locationInput.value = `Jl. Contoh No. 123, Jakarta (${latitude.toFixed(
+                  6
+                )}, ${longitude.toFixed(6)})`;
+              }, 1000);
+            },
+            function (error) {
+              console.error("Error getting location: ", error);
+              locationInput.value = "Lokasi tidak dapat dideteksi";
+              locationStatus.textContent = "Gagal mendeteksi lokasi";
+            }
+          );
+        } else {
+          locationInput.value = "Geolocation tidak didukung";
+          locationStatus.textContent = "Browser tidak mendukung geolocation";
+        }
+      }
+
+      function saveAttendanceData(data) {
+        const currentUser = JSON.parse(localStorage.getItem("currentUser"));
+        if (!currentUser) return;
+
+        // Tambahkan userId ke data absensi
+        data.userId = currentUser.email;
+
+        // Format tanggal ke YYYY-MM-DD
+        const date = new Date(data.id);
+        data.dateStr = date.toISOString().split('T')[0];
+
+        let attendanceHistory =
+          JSON.parse(localStorage.getItem("attendanceHistory")) || [];
+        attendanceHistory.push(data);
+        localStorage.setItem(
+          "attendanceHistory",
+          JSON.stringify(attendanceHistory)
+        );
+      }
+
+      // Inisialisasi saat halaman dimuat
+      window.addEventListener("load", function () {
+        // Cek apakah user sudah login
+        const currentUser = localStorage.getItem("currentUser");
+        if (!currentUser) {
+          window.location.href = "login.html";
+          return;
+        }
+
+        // Setup semua komponen
+        displayUserProfile();
+        setupSidebar();
+        setupLogout();
+        setupFloatingButton();
+        setupMenuCards();
+        setupAttendancePopup();
+
+        // Animasi untuk elemen yang muncul
+        const animatedElements = document.querySelectorAll(".animate-card");
+        animatedElements.forEach((el, index) => {
+          el.style.animationDelay = `${index * 0.1}s`;
+        });
+      });
+    </script>
+  </body>
+</html>

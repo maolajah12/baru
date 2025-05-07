@@ -1,0 +1,1076 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Shift Kerja Karyawan</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/icon?family=Material+Icons"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"
+    />
+    <style>
+      :root {
+        --primary-color: #4a6fa5;
+        --secondary-color: #b9dcff;
+        --accent-color: #ff7e5f;
+        --light-color: #f8f9fa;
+        --dark-color: #343a40;
+        --shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        --transition: all 0.3s ease;
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: "Kanit", sans-serif;
+      }
+
+      body {
+        background-color: var(--light-color);
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        color: var(--dark-color);
+      }
+
+      /* Sidebar Modern */
+      .sidebar {
+        height: 100%;
+        width: 280px;
+        position: fixed;
+        z-index: 1000;
+        top: 0;
+        left: -280px;
+        background: linear-gradient(
+          135deg,
+          var(--primary-color) 0%,
+          #6b8cbe 100%
+        );
+        overflow-x: hidden;
+        transition: var(--transition);
+        box-shadow: 2px 0 15px rgba(0, 0, 0, 0.1);
+        display: flex;
+        flex-direction: column;
+      }
+
+      .sidebar.active {
+        left: 0;
+      }
+
+      .sidebar-header {
+        padding: 25px;
+        color: white;
+        background-color: rgba(0, 0, 0, 0.1);
+        text-align: center;
+      }
+
+      .sidebar-header h2 {
+        font-weight: 500;
+        font-size: 1.5rem;
+        margin-bottom: 5px;
+      }
+
+      .sidebar-header p {
+        font-weight: 300;
+        font-size: 0.9rem;
+        opacity: 0.8;
+      }
+
+      .sidebar-menu {
+        padding: 20px 0;
+        flex: 1;
+      }
+
+      .menu-item {
+        display: flex;
+        align-items: center;
+        padding: 15px 25px;
+        color: white;
+        text-decoration: none;
+        transition: var(--transition);
+        position: relative;
+        overflow: hidden;
+      }
+
+      .menu-item:hover {
+        background-color: rgba(255, 255, 255, 0.1);
+      }
+
+      .menu-item i {
+        margin-right: 15px;
+        font-size: 1.2rem;
+        width: 24px;
+        text-align: center;
+      }
+
+      .menu-item span {
+        font-weight: 300;
+      }
+
+      .menu-item::after {
+        content: "";
+        position: absolute;
+        left: 0;
+        top: 0;
+        height: 100%;
+        width: 3px;
+        background-color: var(--accent-color);
+        transform: translateX(-100%);
+        transition: var(--transition);
+      }
+
+      .menu-item:hover::after {
+        transform: translateX(0);
+      }
+
+      /* Overlay */
+      .overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: rgba(0, 0, 0, 0.5);
+        z-index: 999;
+        opacity: 0;
+        visibility: hidden;
+        transition: var(--transition);
+      }
+
+      .overlay.active {
+        opacity: 1;
+        visibility: visible;
+      }
+
+      /* Top Bar Modern */
+      .top-bar {
+        height: 70px;
+        background-color: white;
+        padding: 0 25px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        box-shadow: var(--shadow);
+        position: relative;
+        z-index: 100;
+      }
+
+      .menu-left {
+        display: flex;
+        align-items: center;
+      }
+
+      .menu-icon {
+        color: var(--primary-color);
+        font-size: 1.8rem;
+        cursor: pointer;
+        margin-right: 15px;
+        transition: var(--transition);
+      }
+
+      .menu-icon:hover {
+        transform: scale(1.1);
+      }
+
+      .page-title {
+        color: var(--primary-color);
+        font-size: 1.3rem;
+        font-weight: 500;
+      }
+
+      .user-profile {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background-color: var(--secondary-color);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        overflow: hidden;
+        transition: var(--transition);
+      }
+
+      .user-profile:hover {
+        transform: scale(1.1);
+      }
+
+      .user-profile img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+
+      /* Konten Utama */
+      .content {
+        flex: 1;
+        padding: 30px;
+        background-color: var(--light-color);
+        position: relative;
+      }
+
+      .welcome-message {
+        margin-bottom: 30px;
+      }
+
+      .welcome-message h1 {
+        color: var(--primary-color);
+        font-weight: 500;
+        font-size: 1.8rem;
+        margin-bottom: 10px;
+      }
+
+      .welcome-message p {
+        color: var(--dark-color);
+        opacity: 0.7;
+        font-weight: 300;
+      }
+
+      /* Calendar Container */
+      .calendar-container {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 25px;
+      }
+
+      @media (min-width: 992px) {
+        .calendar-container {
+          grid-template-columns: 1fr 1fr;
+        }
+      }
+
+      /* Shift Container */
+      .shift-container {
+        background-color: white;
+        border-radius: 15px;
+        box-shadow: var(--shadow);
+        padding: 25px;
+      }
+
+      .shift-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+        padding-bottom: 15px;
+        border-bottom: 1px solid #eee;
+      }
+
+      .shift-title {
+        color: var(--primary-color);
+        font-size: 1.5rem;
+        font-weight: 500;
+      }
+
+      .month-selector {
+        display: flex;
+        align-items: center;
+      }
+
+      .month-selector button {
+        background: none;
+        border: none;
+        color: var(--primary-color);
+        font-size: 1.5rem;
+        cursor: pointer;
+        padding: 5px 10px;
+      }
+
+      .month-selector span {
+        font-size: 1.1rem;
+        margin: 0 15px;
+        min-width: 150px;
+        text-align: center;
+      }
+
+      /* Calendar Styles */
+      .calendar {
+        background-color: white;
+        border-radius: 15px;
+        box-shadow: var(--shadow);
+        padding: 25px;
+      }
+
+      .calendar-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+      }
+
+      .calendar-title {
+        color: var(--primary-color);
+        font-size: 1.5rem;
+        font-weight: 500;
+      }
+
+      .calendar-grid {
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+        gap: 8px;
+      }
+
+      .calendar-day-header {
+        text-align: center;
+        font-weight: 500;
+        color: var(--primary-color);
+        padding: 8px;
+        font-size: 0.9rem;
+      }
+
+      .calendar-day {
+        aspect-ratio: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: var(--transition);
+        position: relative;
+        padding: 5px;
+      }
+
+      .calendar-day.empty {
+        visibility: hidden;
+      }
+
+      .calendar-day-number {
+        font-size: 1rem;
+        font-weight: 500;
+        margin-bottom: 3px;
+      }
+
+      .calendar-day-shift {
+        font-size: 0.7rem;
+        font-weight: 400;
+        padding: 2px 5px;
+        border-radius: 10px;
+        background-color: var(--secondary-color);
+        color: var(--primary-color);
+      }
+
+      .calendar-day.today {
+        background-color: var(--primary-color);
+        color: white;
+      }
+
+      .calendar-day.today .calendar-day-shift {
+        background-color: white;
+        color: var(--primary-color);
+      }
+
+      .calendar-day.workday {
+        background-color: rgba(185, 220, 255, 0.2);
+      }
+
+      .calendar-day.weekend {
+        color: #d32f2f;
+      }
+
+      .calendar-day.weekend.workday {
+        background-color: rgba(255, 126, 95, 0.1);
+      }
+
+      /* Shift Table */
+      .shift-table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+
+      .shift-table th {
+        background-color: var(--primary-color);
+        color: white;
+        padding: 12px 15px;
+        text-align: left;
+        font-weight: 400;
+      }
+
+      .shift-table td {
+        padding: 12px 15px;
+        border-bottom: 1px solid #eee;
+      }
+
+      .shift-table tr:last-child td {
+        border-bottom: none;
+      }
+
+      .shift-table tr:hover {
+        background-color: rgba(185, 220, 255, 0.1);
+      }
+
+      .shift-day {
+        font-weight: 500;
+        color: var(--primary-color);
+      }
+
+      .shift-date {
+        color: #666;
+        font-size: 0.9rem;
+      }
+
+      .shift-time {
+        font-weight: 500;
+      }
+
+      .shift-status {
+        display: inline-block;
+        padding: 5px 10px;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 500;
+      }
+
+      /* Status badges matching histori.html */
+      .status-present {
+        background-color: #e3f9e5;
+        color: #1b7052;
+      }
+
+      .status-late {
+        background-color: #fff4e5;
+        color: #ff9500;
+      }
+
+      .status-absent {
+        background-color: #ffe5e5;
+        color: #ff3b30;
+      }
+
+      .status-leave {
+        background-color: #e5f1ff;
+        color: #007aff;
+      }
+
+      .status-scheduled {
+        background-color: #e3f2fd;
+        color: #1976d2;
+      }
+
+      /* Bottom Bar Modern */
+      .bottom-bar {
+        height: 60px;
+        background-color: white;
+        box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+
+      .bottom-bar p {
+        color: var(--dark-color);
+        opacity: 0.6;
+        font-size: 0.8rem;
+        font-weight: 300;
+      }
+
+      /* Responsive Design */
+      @media (max-width: 768px) {
+        .sidebar {
+          width: 250px;
+          left: -250px;
+        }
+
+        .shift-container,
+        .calendar {
+          padding: 15px;
+        }
+
+        .shift-header,
+        .calendar-header {
+          flex-direction: column;
+          align-items: flex-start;
+        }
+
+        .month-selector {
+          margin-top: 15px;
+          width: 100%;
+          justify-content: space-between;
+        }
+
+        .month-selector span {
+          min-width: 120px;
+        }
+
+        .welcome-message h1 {
+          font-size: 1.5rem;
+        }
+
+        .top-bar {
+          padding: 0 15px;
+          height: 60px;
+        }
+
+        .content {
+          padding: 20px 15px;
+        }
+
+        .shift-table th,
+        .shift-table td {
+          padding: 8px 10px;
+          font-size: 0.9rem;
+        }
+
+        .calendar-day-number {
+          font-size: 0.9rem;
+        }
+
+        .calendar-day-shift {
+          font-size: 0.6rem;
+        }
+      }
+
+      @media (max-width: 480px) {
+        .shift-table {
+          display: block;
+          overflow-x: auto;
+        }
+
+        .calendar-day-number {
+          font-size: 0.8rem;
+        }
+
+        .calendar-day-shift {
+          display: none;
+        }
+      }
+
+      /* Animations */
+      @keyframes fadeInUp {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .animate-card {
+        animation: fadeInUp 0.5s ease forwards;
+        opacity: 0;
+      }
+
+      .delay-1 {
+        animation-delay: 0.1s;
+      }
+      .delay-2 {
+        animation-delay: 0.2s;
+      }
+      .delay-3 {
+        animation-delay: 0.3s;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Overlay -->
+    <div class="overlay" id="overlay"></div>
+
+    <!-- Sidebar/Navigasi -->
+    <div class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <h2>Absensi Karyawan</h2>
+        <p>Menu Navigasi</p>
+      </div>
+      <div class="sidebar-menu">
+        <a href="menu.html" class="menu-item">
+          <i class="material-icons">home</i>
+          <span>Beranda</span>
+        </a>
+        <a href="profile.html" class="menu-item">
+          <i class="material-icons">person</i>
+          <span>Profil Saya</span>
+        </a>
+        <a href="histori.html" class="menu-item">
+          <i class="material-icons">history</i>
+          <span>Histori Absensi</span>
+        </a>
+        <a href="shift.html" class="menu-item">
+          <i class="material-icons">schedule</i>
+          <span>Shift Kerja</span>
+        </a>
+        <a href="grafik.html" class="menu-item">
+          <i class="material-icons">bar_chart</i>
+          <span>Grafik Absen</span>
+        </a>
+        <a href="#" class="menu-item" id="logoutMenuItem">
+          <i class="material-icons">logout</i>
+          <span>Keluar</span>
+        </a>
+      </div>
+    </div>
+
+    <!-- Top Bar -->
+    <div class="top-bar">
+      <div class="menu-left">
+        <i class="material-icons menu-icon" id="menuButton">menu</i>
+        <span class="page-title">Shift Kerja</span>
+      </div>
+      <div class="user-profile" id="userProfile">
+        <img
+          src="https://ui-avatars.com/api/?name=Karyawan&background=4A6FA5&color=fff"
+          alt="Profile"
+        />
+      </div>
+    </div>
+
+    <!-- Konten Utama -->
+    <div class="content">
+      <div class="welcome-message animate__animated animate__fadeIn">
+        <h1 id="welcomeTitle">Jadwal Shift Kerja</h1>
+        <p id="welcomeSubtitle">Lihat jadwal shift kerja Anda bulan ini</p>
+      </div>
+
+      <div class="calendar-container">
+        <!-- Kalender -->
+        <div class="calendar animate__animated animate__fadeIn">
+          <div class="calendar-header">
+            <h2 class="calendar-title">Kalender Kerja</h2>
+            <div class="month-selector">
+              <button id="prevMonthCalendar">
+                <i class="material-icons">chevron_left</i>
+              </button>
+              <span id="currentMonthCalendar">Juni 2023</span>
+              <button id="nextMonthCalendar">
+                <i class="material-icons">chevron_right</i>
+              </button>
+            </div>
+          </div>
+
+          <div class="calendar-grid" id="calendarDaysHeader">
+            <div class="calendar-day-header">Minggu</div>
+            <div class="calendar-day-header">Senin</div>
+            <div class="calendar-day-header">Selasa</div>
+            <div class="calendar-day-header">Rabu</div>
+            <div class="calendar-day-header">Kamis</div>
+            <div class="calendar-day-header">Jumat</div>
+            <div class="calendar-day-header">Sabtu</div>
+          </div>
+
+          <div class="calendar-grid" id="calendarDays">
+            <!-- Hari kalender akan diisi oleh JavaScript -->
+          </div>
+        </div>
+
+        <!-- Daftar Shift -->
+        <div class="shift-container animate__animated animate__fadeIn">
+          <div class="shift-header">
+            <h2 class="shift-title">Detail Shift</h2>
+            <div class="month-selector">
+              <button id="prevMonth">
+                <i class="material-icons">chevron_left</i>
+              </button>
+              <span id="currentMonth">Juni 2023</span>
+              <button id="nextMonth">
+                <i class="material-icons">chevron_right</i>
+              </button>
+            </div>
+          </div>
+
+          <table class="shift-table">
+            <thead>
+              <tr>
+                <th>Hari/Tanggal</th>
+                <th>Shift</th>
+                <th>Waktu</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody id="shiftTableBody">
+              <!-- Data shift akan diisi oleh JavaScript -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bottom Bar -->
+    <div class="bottom-bar">
+      <p>© 2025 Sistem Absensi Karyawan</p>
+    </div>
+
+    <script>
+      // Fungsi untuk menampilkan data user yang login
+      function displayUserProfile() {
+        const currentUser = JSON.parse(localStorage.getItem("currentUser"));
+
+        if (currentUser) {
+          // Update welcome message with full name
+          document.getElementById("welcomeTitle").textContent = `Jadwal Shift ${
+            currentUser.fullName || "Anda"
+          }`;
+          document.getElementById(
+            "welcomeSubtitle"
+          ).textContent = `Periode ${new Date().toLocaleDateString("id-ID", {
+            month: "long",
+            year: "numeric",
+          })}`;
+
+          // Update profile picture using full name
+          const nameForAvatar = currentUser.fullName
+            ? currentUser.fullName.split(" ").slice(0, 2).join(" ")
+            : "Karyawan";
+          document.getElementById("userProfile").innerHTML = `
+              <img src="https://ui-avatars.com/api/?name=${encodeURIComponent(
+                nameForAvatar
+              )}&background=4A6FA5&color=fff" alt="Profile">
+            `;
+        }
+      }
+
+      // Fungsi untuk logout
+      function setupLogout() {
+        document
+          .getElementById("logoutMenuItem")
+          .addEventListener("click", function (e) {
+            e.preventDefault();
+            localStorage.removeItem("currentUser");
+            window.location.href = "login.html";
+          });
+      }
+
+      // Fungsi untuk sidebar
+      function setupSidebar() {
+        const menuButton = document.getElementById("menuButton");
+        const sidebar = document.getElementById("sidebar");
+        const overlay = document.getElementById("overlay");
+
+        menuButton.addEventListener("click", function () {
+          sidebar.classList.toggle("active");
+          overlay.classList.toggle("active");
+        });
+
+        overlay.addEventListener("click", function () {
+          sidebar.classList.remove("active");
+          overlay.classList.remove("active");
+        });
+      }
+
+      // Fungsi untuk mendapatkan data absensi dari histori
+      function getAttendanceData() {
+        const currentUser = JSON.parse(localStorage.getItem("currentUser"));
+        if (!currentUser) return [];
+
+        const attendanceHistory =
+          JSON.parse(localStorage.getItem("attendanceHistory")) || [];
+        return attendanceHistory.filter(
+          (record) => record.userId === currentUser.email
+        );
+        // Log setiap record yang diambil
+        userAttendance.forEach((record) => {
+          const recordDate = new Date(record.id).toISOString().split("T")[0]; // Format: YYYY-MM-DD
+          console.log("Tanggal di histori.html:", recordDate); // Tambahkan ini
+        });
+
+        return userAttendance;
+      }
+
+      // Fungsi untuk generate data shift yang disinkronkan dengan histori absensi
+      function generateShiftData(month, year) {
+        const daysInMonth = new Date(year, month + 1, 0).getDate();
+        const attendanceData = getAttendanceData();
+        const currentDate = new Date();
+
+        const shiftTypes = [
+          { name: "Pagi", start: "08:00", end: "16:00" },
+          { name: "Siang", start: "16:00", end: "00:00" },
+          { name: "Malam", start: "00:00", end: "08:00" },
+          { name: "Libur", start: "-", end: "-" },
+        ];
+
+        const daysOfWeek = [
+          "Minggu",
+          "Senin",
+          "Selasa",
+          "Rabu",
+          "Kamis",
+          "Jumat",
+          "Sabtu",
+        ];
+
+        let shiftData = [];
+
+        for (let day = 1; day <= daysInMonth; day++) {
+          const date = new Date(Date.UTC(year, month, day));
+          const dateStr = date.toISOString().split("T")[0];
+          console.log("Tanggal di shift.html:", dateStr); // Format: YYYY-MM-DD
+          const dayOfWeek = daysOfWeek[date.getDay()];
+          const isWeekend = date.getDay() === 0 || date.getDay() === 6;
+
+          // Cari data absensi untuk tanggal ini
+          const attendanceRecord = attendanceData.find((record) => {
+            const recordDate = new Date(record.id).toISOString().split("T")[0];
+            return recordDate === dateStr; // Bandingkan dengan format YYYY-MM-DD
+          });
+
+          // Tentukan shift default (random untuk demo, tapi weekend lebih mungkin libur)
+          let shiftType;
+          if (isWeekend && Math.random() > 0.3) {
+            shiftType = shiftTypes[3]; // Libur
+          } else {
+            shiftType = shiftTypes[Math.floor(Math.random() * 3)];
+          }
+
+          // Tentukan status berdasarkan data absensi
+          let status = "status-scheduled";
+          let statusText = "Terjadwal";
+          let statusClass = "status-scheduled";
+
+          if (attendanceRecord) {
+            switch (attendanceRecord.status) {
+              case "present":
+                statusText = "Hadir";
+                statusClass = "status-present";
+                break;
+              case "late":
+                statusText = "Terlambat";
+                statusClass = "status-late";
+                break;
+              case "leave":
+                statusText = "Izin/Cuti";
+                statusClass = "status-leave";
+                break;
+              case "sick":
+                statusText = "Sakit";
+                statusClass = "status-absent";
+                break;
+              default:
+                statusText = "Hadir";
+                statusClass = "status-present";
+            }
+          } else if (
+            date < currentDate &&
+            date.getMonth() <= currentDate.getMonth() &&
+            date.getFullYear() <= currentDate.getFullYear()
+          ) {
+            // Jika sudah lewat tanggalnya dan tidak ada data absensi
+            if (shiftType.name !== "Libur") {
+              statusText = "Tidak Hadir";
+              statusClass = "status-absent";
+            } else {
+              statusText = "Libur";
+              statusClass = "status-leave";
+            }
+          }
+
+          shiftData.push({
+            day: dayOfWeek,
+            date: `${day}/${month + 1}/${year}`,
+            shift: shiftType.name,
+            start: shiftType.start,
+            end: shiftType.end,
+            status: statusClass,
+            statusText: statusText,
+            isWorkday: shiftType.name !== "Libur",
+            isWeekend: isWeekend,
+            hasAttendance: !!attendanceRecord,
+          });
+        }
+
+        return shiftData;
+      }
+
+      // Fungsi untuk render kalender
+      function renderCalendar(month, year) {
+        const monthNames = [
+          "Januari",
+          "Februari",
+          "Maret",
+          "April",
+          "Mei",
+          "Juni",
+          "Juli",
+          "Agustus",
+          "September",
+          "Oktober",
+          "November",
+          "Desember",
+        ];
+        document.getElementById(
+          "currentMonthCalendar"
+        ).textContent = `${monthNames[month]} ${year}`;
+
+        const firstDay = new Date(year, month, 1).getDay();
+        const daysInMonth = new Date(year, month + 1, 0).getDate();
+        const shiftData = generateShiftData(month, year);
+        const currentDate = new Date();
+
+        const calendarDays = document.getElementById("calendarDays");
+        calendarDays.innerHTML = "";
+
+        // Tambahkan hari kosong untuk minggu pertama
+        for (let i = 0; i < firstDay; i++) {
+          const emptyDay = document.createElement("div");
+          emptyDay.className = "calendar-day empty";
+          calendarDays.appendChild(emptyDay);
+        }
+
+        // Tambahkan hari-hari dalam bulan
+        for (let day = 1; day <= daysInMonth; day++) {
+          const date = new Date(year, month, day);
+          const shift = shiftData[day - 1];
+          const isToday =
+            date.getDate() === currentDate.getDate() &&
+            date.getMonth() === currentDate.getMonth() &&
+            date.getFullYear() === currentDate.getFullYear();
+
+          const dayElement = document.createElement("div");
+          dayElement.className = `calendar-day animate-card ${
+            isToday ? "today" : ""
+          } ${shift.isWorkday ? "workday" : ""} ${
+            shift.isWeekend ? "weekend" : ""
+          }`;
+
+          dayElement.innerHTML = `
+              <div class="calendar-day-number">${day}</div>
+              ${
+                shift.isWorkday
+                  ? `<div class="calendar-day-shift">${shift.shift}</div>`
+                  : ""
+              }
+            `;
+
+          // Tambahkan indikator status absensi
+          if (shift.hasAttendance || (!shift.isWorkday && date < currentDate)) {
+            const statusIndicator = document.createElement("div");
+            statusIndicator.className = `status-badge ${shift.status}`;
+            statusIndicator.style.marginTop = "3px";
+            statusIndicator.style.fontSize = "0.6rem";
+            statusIndicator.style.padding = "2px 5px";
+            statusIndicator.textContent = shift.statusText.split(" ")[0]; // Ambil kata pertama saja
+            dayElement.appendChild(statusIndicator);
+          }
+
+          calendarDays.appendChild(dayElement);
+        }
+      }
+
+      // Fungsi untuk render tabel shift
+      function renderShiftTable(month, year) {
+        const monthNames = [
+          "Januari",
+          "Februari",
+          "Maret",
+          "April",
+          "Mei",
+          "Juni",
+          "Juli",
+          "Agustus",
+          "September",
+          "Oktober",
+          "November",
+          "Desember",
+        ];
+        document.getElementById(
+          "currentMonth"
+        ).textContent = `${monthNames[month]} ${year}`;
+
+        const shiftData = generateShiftData(month, year);
+        const tableBody = document.getElementById("shiftTableBody");
+        tableBody.innerHTML = "";
+
+        shiftData.forEach((shift, index) => {
+          const row = document.createElement("tr");
+          row.className = "animate-card";
+          row.style.animationDelay = `${index * 0.05}s`;
+          row.innerHTML = `
+              <td>
+                <div class="shift-day">${shift.day}</div>
+                <div class="shift-date">${shift.date}</div>
+              </td>
+              <td>${shift.shift}</td>
+              <td class="shift-time">${shift.start} - ${shift.end}</td>
+              <td><span class="shift-status ${shift.status}">${shift.statusText}</span></td>
+            `;
+          tableBody.appendChild(row);
+        });
+      }
+
+      // Fungsi untuk setup navigasi bulan
+      function setupMonthNavigation() {
+        let currentDate = new Date();
+        let currentMonth = currentDate.getMonth();
+        let currentYear = currentDate.getFullYear();
+
+        renderCalendar(currentMonth, currentYear);
+        renderShiftTable(currentMonth, currentYear);
+
+        // Navigation for calendar
+        document
+          .getElementById("prevMonthCalendar")
+          .addEventListener("click", function () {
+            currentMonth--;
+            if (currentMonth < 0) {
+              currentMonth = 11;
+              currentYear--;
+            }
+            renderCalendar(currentMonth, currentYear);
+            renderShiftTable(currentMonth, currentYear);
+          });
+
+        document
+          .getElementById("nextMonthCalendar")
+          .addEventListener("click", function () {
+            currentMonth++;
+            if (currentMonth > 11) {
+              currentMonth = 0;
+              currentYear++;
+            }
+            renderCalendar(currentMonth, currentYear);
+            renderShiftTable(currentMonth, currentYear);
+          });
+
+        // Navigation for shift table
+        document
+          .getElementById("prevMonth")
+          .addEventListener("click", function () {
+            currentMonth--;
+            if (currentMonth < 0) {
+              currentMonth = 11;
+              currentYear--;
+            }
+            renderCalendar(currentMonth, currentYear);
+            renderShiftTable(currentMonth, currentYear);
+          });
+
+        document
+          .getElementById("nextMonth")
+          .addEventListener("click", function () {
+            currentMonth++;
+            if (currentMonth > 11) {
+              currentMonth = 0;
+              currentYear++;
+            }
+            renderCalendar(currentMonth, currentYear);
+            renderShiftTable(currentMonth, currentYear);
+          });
+      }
+
+      // Inisialisasi saat halaman dimuat
+      window.addEventListener("load", function () {
+        // Cek apakah user sudah login
+        const currentUser = localStorage.getItem("currentUser");
+        if (!currentUser) {
+          window.location.href = "login.html";
+          return;
+        }
+
+        // Setup semua komponen
+        displayUserProfile();
+        setupSidebar();
+        setupLogout();
+        setupMonthNavigation();
+      });
+    </script>
+  </body>
+</html>
